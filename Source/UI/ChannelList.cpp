@@ -120,7 +120,7 @@ void ChannelList::update()
 
     maxChannels = 0;
 
-    numberingScheme->setSelectedId(board->getNamingScheme(), dontSendNotification);
+    // numberingScheme->setSelectedId(board->getNamingScheme(), dontSendNotification);
 }
 
 void ChannelList::disableAll()
@@ -170,7 +170,7 @@ void ChannelList::comboBoxChanged(ComboBox *b)
 {
     if (b == numberingScheme)
     {
-        board->setNamingScheme((ChannelNamingScheme)b->getSelectedId());
+        // board->setNamingScheme((ChannelNamingScheme)b->getSelectedId());
 
         CoreServices::updateSignalChain(editor);
     }

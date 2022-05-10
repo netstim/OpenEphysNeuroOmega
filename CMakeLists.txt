@@ -91,11 +91,14 @@ foreach( src_file IN ITEMS ${SRC_FILES})
 	source_group("${group_name}" FILES "${src_file}")
 endforeach()
 
-#additional libraries, if needed
-#find_package(LIBNAME)
-#or
-#find_library(LIBNAME_LIBRARIES NAMES libname)
-#find_path(LIBNAME_INCLUDE_DIRS includefile.h)
-#
-#target_link_libraries(${PLUGIN_NAME} ${LIBNAME_LIBRARIES})
-#target_include_directories(${PLUGIN_NAME} PRIVATE ${LIBNAME_INCLUDE_DIRS})
+#AlphaOmega SDK
+SET(ALPHAOMEGA_SDK_PATH_HINTS
+  "C:/Program Files (x86)/AlphaOmega/Neuro Omega System SDK"
+  )
+find_path(ALPHAOMEGA_SDK_DIR ReadMe.txt
+  PATHS ${ALPHAOMEGA_SDK_PATH_HINTS}
+  DOC "AlphaOmega SDK directory"
+  )
+
+target_link_libraries(${PLUGIN_NAME} ${ALPHAOMEGA_SDK_DIR}/CPP_SDK/win64/NeuroOmega_x64.lib)
+target_include_directories(${PLUGIN_NAME} PRIVATE ${ALPHAOMEGA_SDK_DIR}/CPP_SDK/Include)

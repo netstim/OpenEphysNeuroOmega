@@ -59,13 +59,3 @@ extern "C" EXPORT int getPluginInfo(int index, Plugin::PluginInfo *info)
 	}
 	return 0;
 }
-
-#ifdef WIN32
-BOOL WINAPI DllMain(IN HINSTANCE hDllHandle,
-					IN DWORD nReason,
-					IN LPVOID Reserved)
-{
-	return TRUE;
-}
-
-#endif

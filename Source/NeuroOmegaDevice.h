@@ -20,8 +20,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __ACQUISITIONBOARD_H_2C4CBD67__
-#define __ACQUISITIONBOARD_H_2C4CBD67__
+#ifndef __NUEROOMEGA__
+#define __NUEROOMEGA__
 
 #include "DeviceThread.h"
 
