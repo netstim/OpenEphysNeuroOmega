@@ -116,11 +116,24 @@ void ChannelList::update()
 
     const int columnWidth = 250;
 
-    int column = -1;
+    int column = 0;
 
-    maxChannels = 0;
+    for (int ch = 0; ch < board->getNumberOfChannels(); ch++)
+    {
+        ChannelComponent *comp =
+            new ChannelComponent(
+                this,
+                ch,
+                0,
+                board->getNthChannelName(ch),
+                gains,
+                ContinuousChannel::ELECTRODE);
 
-    // numberingScheme->setSelectedId(board->getNamingScheme(), dontSendNotification);
+        comp->setBounds(10 + column * columnWidth, 70 + ch * 22, columnWidth, 22);
+
+        channelComponents.add(comp);
+        addAndMakeVisible(comp);
+    }
 }
 
 void ChannelList::disableAll()

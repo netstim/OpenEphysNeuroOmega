@@ -66,6 +66,12 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
         channelNames.add(pChannelsInfo[i].channelName);
     }
 
+    if (testing)
+    {
+        channelNames.add("TestChannel1");
+        channelNames.add("TestChannel2");
+    }
+
     numberOfChannels = channelNames.size();
 }
 
@@ -140,8 +146,10 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
     devices->clear();
     configurationObjects->clear();
 
+    // Data stream 1
+
     DataStream::Settings dataStreamSettings{
-        "Device Data",
+        "RAW",
         "description",
         "identifier",
         static_cast<float>(44.000) // TODO: sampling rate
@@ -163,18 +171,39 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
 
         continuousChannels->add(new ContinuousChannel(channelSettings));
         continuousChannels->getLast()->setUnits("uV");
+    }
 
-        // if (impedances.valid)
-        // {
-        //     continuousChannels->getLast()->impedance.magnitude = headstage->getImpedanceMagnitude(ch);
-        //     continuousChannels->getLast()->impedance.phase = headstage->getImpedancePhase(ch);
-        // }
+    // Data stream 2
+
+    DataStream::Settings dataStreamSettings2{
+        "EEG",
+        "description",
+        "identifier",
+        static_cast<float>(10.000) // TODO: sampling rate
+    };
+
+    stream = new DataStream(dataStreamSettings2);
+
+    sourceStreams->add(stream);
+
+    for (int ch = 0; ch < numberOfChannels; ch++)
+    {
+        ContinuousChannel::Settings channelSettings{
+            ContinuousChannel::ELECTRODE,
+            getNthChannelName(ch),
+            "description",
+            "identifier",
+            0.195,
+            stream};
+
+        continuousChannels->add(new ContinuousChannel(channelSettings));
+        continuousChannels->getLast()->setUnits("uV");
     }
 }
 
 bool DeviceThread::foundInputSource()
 {
-    return (AO::isConnected() == AO::eAO_CONNECTED);
+    return ((AO::isConnected() == AO::eAO_CONNECTED) || testing);
 }
 
 bool DeviceThread::startAcquisition()

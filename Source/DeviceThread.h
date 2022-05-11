@@ -86,6 +86,9 @@ namespace AONode
 
 		static DataThread *createDataThread(SourceNode *sn);
 
+		String getNthChannelName(int ch) const { return channelNames[ch]; };
+		int getNumberOfChannels() { return numberOfChannels; };
+
 	private:
 		// AO
 		AO::int16 *pArray;
@@ -104,9 +107,12 @@ namespace AONode
 		/** Open the connection to the neuro omega*/
 		void queryUserStartConnection();
 
+		/** Channels */
 		StringArray channelNames;
 		int numberOfChannels;
-		String getNthChannelName(int ch) const { return channelNames[ch]; };
+
+		/** Testing */
+		bool testing = true;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeviceThread);
 	};
