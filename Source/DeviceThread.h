@@ -98,6 +98,12 @@ namespace AONode
 		AO::ULONG TS_Begin;
 		int64 timestamp;
 
+		int numItems;
+		int64 *sampleNumbers;
+		double *timestamps;
+		uint64 *eventCodes;
+		int chunkSize;
+
 		/** True if data is streaming*/
 		bool isTransmitting;
 

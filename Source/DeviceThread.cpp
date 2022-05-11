@@ -69,7 +69,7 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
     if (testing)
     {
         channelNames.add("TestChannel1");
-        channelNames.add("TestChannel2");
+        // channelNames.add("TestChannel2");
     }
 
     numberOfChannels = channelNames.size();
@@ -152,7 +152,7 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
         "RAW",
         "description",
         "identifier",
-        static_cast<float>(44.000) // TODO: sampling rate
+        static_cast<float>(1000) // TODO: sampling rate
     };
 
     DataStream *stream = new DataStream(dataStreamSettings);
@@ -175,30 +175,30 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
 
     // Data stream 2
 
-    DataStream::Settings dataStreamSettings2{
-        "EEG",
-        "description",
-        "identifier",
-        static_cast<float>(10.000) // TODO: sampling rate
-    };
+    // DataStream::Settings dataStreamSettings2{
+    //     "EEG",
+    //     "description",
+    //     "identifier",
+    //     static_cast<float>(10.000) // TODO: sampling rate
+    // };
 
-    stream = new DataStream(dataStreamSettings2);
+    // stream = new DataStream(dataStreamSettings2);
 
-    sourceStreams->add(stream);
+    // sourceStreams->add(stream);
 
-    for (int ch = 0; ch < numberOfChannels; ch++)
-    {
-        ContinuousChannel::Settings channelSettings{
-            ContinuousChannel::ELECTRODE,
-            getNthChannelName(ch),
-            "description",
-            "identifier",
-            0.195,
-            stream};
+    // for (int ch = 0; ch < numberOfChannels; ch++)
+    // {
+    //     ContinuousChannel::Settings channelSettings{
+    //         ContinuousChannel::ELECTRODE,
+    //         getNthChannelName(ch),
+    //         "description",
+    //         "identifier",
+    //         0.195,
+    //         stream};
 
-        continuousChannels->add(new ContinuousChannel(channelSettings));
-        continuousChannels->getLast()->setUnits("uV");
-    }
+    //     continuousChannels->add(new ContinuousChannel(channelSettings));
+    //     continuousChannels->getLast()->setUnits("uV");
+    // }
 }
 
 bool DeviceThread::foundInputSource()
@@ -209,11 +209,18 @@ bool DeviceThread::foundInputSource()
 bool DeviceThread::startAcquisition()
 {
     pArray = new AO::int16[10000];
-    ArraySize = 1000;
+    ArraySize = 10000;
     actualData = 0;
     arrChannel[0] = 10000;
     arrChannel[1] = 10001;
     arrChannel[2] = 10002;
+
+    numItems = 1;
+    sampleNumbers = new int64[numItems];
+    sampleNumbers[0] = 0;
+    timestamps = new double[numItems];
+    eventCodes = new uint64[numItems];
+    chunkSize = 1;
 
     if (foundInputSource())
     {
@@ -249,22 +256,13 @@ bool DeviceThread::stopAcquisition()
 bool DeviceThread::updateBuffer()
 {
     float *data = new float[numberOfChannels];
-    int numItems = 1;
-    int64 *sampleNumbers = new int64[numItems];
-    double *timestamps = new double[numItems];
-    uint64 *eventCodes = new uint64[numItems];
-    int chunkSize = 1;
 
     // Gather Data
-    if (foundInputSource())
+    if (testing)
     {
-        AO::GetAlignedData(pArray, ArraySize, &actualData, arrChannel, numberOfChannels, &TS_Begin);
-    }
-    else
-    {
-        int sleepTimeMiliS = 10;
+        int sleepTimeMiliS = 100;
         Thread::sleep(sleepTimeMiliS);
-        actualData = sleepTimeMiliS / 1000.0 * 44000.0 * numberOfChannels;
+        actualData = sleepTimeMiliS / 1000.0 * 1000.0 * numberOfChannels;
         for (int i = 0; i < numberOfChannels; i++)
         {
             for (int j = 0; j < (actualData / numberOfChannels); j++)
@@ -273,10 +271,17 @@ bool DeviceThread::updateBuffer()
             }
         }
     }
+    else if (foundInputSource() && !testing)
+    {
+        AO::GetAlignedData(pArray, ArraySize, &actualData, arrChannel, numberOfChannels, &TS_Begin);
+    }
+    else
+    {
+        return false;
+    }
 
     // output
-    timestamps[0] = 0;
-    sampleNumbers[0] = 1;
+    timestamps[0] = float(std::time(0));
     eventCodes[0] = 1;
 
     int nSamps = actualData / numberOfChannels;
@@ -286,7 +291,9 @@ bool DeviceThread::updateBuffer()
         {
             data[chan] = pArray[(chan * nSamps) + samp];
         }
-        timestamps[0] = float(std::time(0));
+
+        sampleNumbers[0] = sampleNumbers[0] + 1;
+        timestamps[0] = timestamps[0] + 0.001 * samp;
 
         sourceBuffers[0]->addToBuffer(data,
                                       sampleNumbers,
