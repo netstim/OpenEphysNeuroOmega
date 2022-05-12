@@ -57,26 +57,46 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
     sourceBuffers.add(new DataBuffer(2, SOURCE_BUFFER_SIZE)); // start with 2 channels and automatically resize
     queryUserStartConnection();
 
-    channelNames.clear();
-
     AO::uint32 uChannelsCount = 0;
     AO::GetChannelsCount(&uChannelsCount);
 
     AO::SInformation *pChannelsInfo = new AO::SInformation[uChannelsCount];
     AO::GetAllChannels(pChannelsInfo, uChannelsCount);
 
+    channelsInformation = new XmlElement("DATA");
+
+    XmlElement *channel;
+
     for (int i = 0; i < uChannelsCount; i++)
     {
-        channelNames.add(pChannelsInfo[i].channelName);
+        channel = new XmlElement("CHANNEL");
+        channel->setAttribute("ID", pChannelsInfo[i].channelID);
+        channel->setAttribute("Name", pChannelsInfo[i].channelName);
+        channel->setAttribute("Sampling Rate", 44000);
+        channel->setAttribute("Bit resolution", 38.147);
+        channel->setAttribute("Gain", 20);
+        channelsInformation->addChildElement(channel);
     }
 
     if (testing)
     {
-        channelNames.add("TestChannel1");
-        channelNames.add("TestChannel2");
+        channel = new XmlElement("CHANNEL");
+        channel->setAttribute("ID", "1000");
+        channel->setAttribute("Name", "TestChannel1");
+        channel->setAttribute("Sampling Rate", 44000);
+        channel->setAttribute("Bit resolution", 38.147);
+        channel->setAttribute("Gain", 20);
+        channelsInformation->addChildElement(channel);
+        channel = new XmlElement("CHANNEL");
+        channel->setAttribute("ID", "1001");
+        channel->setAttribute("Name", "TestChannel2");
+        channel->setAttribute("Sampling Rate", 44000);
+        channel->setAttribute("Bit resolution", 38.147);
+        channel->setAttribute("Gain", 20);
+        channelsInformation->addChildElement(channel);
     }
 
-    numberOfChannels = channelNames.size();
+    numberOfChannels = channelsInformation->getNumChildElements();
 }
 
 DeviceThread::~DeviceThread()
@@ -298,7 +318,7 @@ bool DeviceThread::updateBuffer()
     {
         for (int chan = 0; chan < numberOfChannels; chan++)
         {
-            sourceBufferData[chan] = deviceDataArray[(chan * numberOfSamplesPerChannel) + samp];
+            sourceBufferData[chan] = deviceDataArray[(chan * numberOfSamplesPerChannel) + samp] * channelsInformation->getChildElement(chan)->getDoubleAttribute("Bit resolution") / channelsInformation->getChildElement(chan)->getDoubleAttribute("Gain");
         }
 
         sourceBuffers[0]->addToBuffer(sourceBufferData,

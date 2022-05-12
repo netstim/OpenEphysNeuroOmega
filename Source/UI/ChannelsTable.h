@@ -13,8 +13,13 @@ namespace AONode
     public:
         TableComponent()
         {
+        }
 
-            loadData();
+        void init(XmlElement *channelsInformation)
+        {
+            dataList = channelsInformation;
+            numRows = dataList->getNumChildElements();
+            setUpHeaders();
 
             addAndMakeVisible(table);
 
@@ -27,7 +32,7 @@ namespace AONode
                 {
                     table.getHeader().addColumn(columnXml->getStringAttribute("name"),
                                                 columnXml->getIntAttribute("columnId"),
-                                                columnXml->getIntAttribute("width"),
+                                                getColumnAutoSizeWidth(columnXml->getIntAttribute("columnId")),
                                                 50,
                                                 400,
                                                 TableHeaderComponent::defaultFlags);
@@ -216,61 +221,19 @@ namespace AONode
         };
 
         //==============================================================================
-        void loadData()
+        void setUpHeaders()
         {
-            // HEADERS
             columnList = new XmlElement("HEADERS");
 
-            XmlElement *h1 = new XmlElement("1");
-            h1->setAttribute("columnId", "1");
-            h1->setAttribute("name", "ID");
-            h1->setAttribute("width", 100);
-            columnList->addChildElement(h1);
+            XmlElement *element;
 
-            XmlElement *h2 = new XmlElement("2");
-            h2->setAttribute("columnId", "2");
-            h2->setAttribute("name", "Name");
-            h2->setAttribute("width", 200);
-            columnList->addChildElement(h2);
-
-            XmlElement *h3 = new XmlElement("3");
-            h3->setAttribute("columnId", "3");
-            h3->setAttribute("name", "Sampling Rate");
-            h3->setAttribute("width", 100);
-            columnList->addChildElement(h3);
-
-            XmlElement *h4 = new XmlElement("4");
-            h4->setAttribute("columnId", "4");
-            h4->setAttribute("name", "Bit resolution");
-            h4->setAttribute("width", 100);
-            columnList->addChildElement(h4);
-
-            XmlElement *h5 = new XmlElement("5");
-            h5->setAttribute("columnId", "5");
-            h5->setAttribute("name", "Gain");
-            h5->setAttribute("width", 100);
-            columnList->addChildElement(h5);
-
-            // DATA
-            dataList = new XmlElement("DATA");
-
-            XmlElement *channel01 = new XmlElement("1000");
-            channel01->setAttribute("ID", "1000");
-            channel01->setAttribute("Name", "Channel Name");
-            channel01->setAttribute("Sampling Rate", 44000);
-            channel01->setAttribute("Bit resolution", 38.147);
-            channel01->setAttribute("Gain", 20);
-            dataList->addChildElement(channel01);
-
-            XmlElement *channel02 = new XmlElement("1001");
-            channel02->setAttribute("ID", "1001");
-            channel02->setAttribute("Name", "Other Channel Name");
-            channel02->setAttribute("Sampling Rate", 44000);
-            channel02->setAttribute("Bit resolution", 38.147);
-            channel02->setAttribute("Gain", 20);
-            dataList->addChildElement(channel02);
-
-            numRows = dataList->getNumChildElements();
+            for (int i = 0; i < dataList->getChildElement(0)->getNumAttributes(); i++)
+            {
+                element = new XmlElement("COLUMN");
+                element->setAttribute("columnId", i + 1);
+                element->setAttribute("name", dataList->getChildElement(0)->getAttributeName(i));
+                columnList->addChildElement(element);
+            }
         }
 
         String getAttributeNameForColumnId(const int columnId) const
@@ -292,8 +255,10 @@ namespace AONode
     {
     public:
         //==============================================================================
-        ChannelsMainComponent()
+        ChannelsMainComponent(XmlElement *channelsInformation)
         {
+            table.init(channelsInformation);
+
             addAndMakeVisible(table);
 
             setSize(1200, 600);

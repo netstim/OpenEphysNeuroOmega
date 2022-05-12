@@ -86,10 +86,14 @@ namespace AONode
 
 		static DataThread *createDataThread(SourceNode *sn);
 
-		String getNthChannelName(int ch) const { return channelNames[ch]; };
-		int getNumberOfChannels() { return numberOfChannels; };
+		String getNthChannelName(int ch) const { return channelsInformation->getChildElement(ch)->getStringAttribute("Name"); };
+		XmlElement *getChannelsInformation() { return channelsInformation; };
 
 	private:
+		// Channels info
+		XmlElement *channelsInformation = nullptr;
+		int numberOfChannels;
+
 		// Neuro Omega Buffer
 		AO::int16 *deviceDataArray;
 		int deviceDataArraySize;
@@ -113,10 +117,6 @@ namespace AONode
 
 		/** Open the connection to the neuro omega*/
 		void queryUserStartConnection();
-
-		/** Channels */
-		StringArray channelNames;
-		int numberOfChannels;
 
 		/** Testing */
 		bool testing = true;

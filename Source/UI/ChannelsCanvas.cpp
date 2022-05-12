@@ -36,7 +36,7 @@ ChannelsCanvas::ChannelsCanvas(DeviceThread *board_,
 {
 
     channelViewport = std::make_unique<Viewport>();
-    channelsTable = std::make_unique<ChannelsMainComponent>();
+    channelsTable = std::make_unique<ChannelsMainComponent>(board->getChannelsInformation());
 
     channelViewport->setViewedComponent(channelsTable.get(), false);
     addAndMakeVisible(channelViewport.get());
@@ -63,7 +63,7 @@ void ChannelsCanvas::refreshState()
 void ChannelsCanvas::update()
 {
 
-    // channelList->update();
+    // channelList->update(); // TODO
 }
 
 void ChannelsCanvas::beginAnimation()
