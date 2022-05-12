@@ -24,10 +24,9 @@
 #ifndef __CHANNELCANVAS_H_2AD3C591__
 #define __CHANNELCANVAS_H_2AD3C591__
 
-#include <VisualizerEditorHeaders.h>
+#include "ChannelsTable.h"
 
-#include "ChannelList.h"
-#include "ChannelComponent.h"
+#include <VisualizerEditorHeaders.h>
 
 namespace AONode
 {
@@ -43,15 +42,15 @@ namespace AONode
 
 	  */
 
-	class ChannelCanvas : public Visualizer
+	class ChannelsCanvas : public Visualizer
 	{
 	public:
 		/** Constructor */
-		ChannelCanvas(DeviceThread *board,
-					  DeviceEditor *editor);
+		ChannelsCanvas(DeviceThread *board,
+					   DeviceEditor *editor);
 
 		/** Destructor */
-		~ChannelCanvas() {}
+		~ChannelsCanvas() {}
 
 		/** Render the background */
 		void paint(Graphics &g);
@@ -76,7 +75,7 @@ namespace AONode
 
 		/** Child components*/
 		std::unique_ptr<Viewport> channelViewport;
-		std::unique_ptr<ChannelList> channelList;
+		std::unique_ptr<ChannelsMainComponent> channelsTable;
 
 		/** Pointer to the acquisition device */
 		DeviceThread *board;

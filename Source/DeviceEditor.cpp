@@ -24,7 +24,7 @@
 #include "DeviceEditor.h"
 #include "DeviceThread.h"
 
-#include "UI/ChannelCanvas.h"
+#include "UI/ChannelsCanvas.h"
 
 #include <cmath>
 
@@ -442,7 +442,7 @@ Visualizer *DeviceEditor::createNewCanvas()
 {
     GenericProcessor *processor = (GenericProcessor *)getProcessor();
 
-    canvas = new ChannelCanvas(board, this);
+    canvas = new ChannelsCanvas(board, this);
 
     return canvas;
 }

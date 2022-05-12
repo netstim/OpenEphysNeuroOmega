@@ -21,9 +21,8 @@
 
 */
 
-#include "ChannelCanvas.h"
-
-#include "ChannelList.h"
+#include "ChannelsCanvas.h"
+#include "ChannelsTable.h"
 
 #include "../DeviceThread.h"
 
@@ -31,61 +30,54 @@ using namespace AONode;
 
 /**********************************************/
 
-ChannelCanvas::ChannelCanvas(DeviceThread *board_,
-                             DeviceEditor *editor_) : board(board_),
-                                                      editor(editor_)
+ChannelsCanvas::ChannelsCanvas(DeviceThread *board_,
+                               DeviceEditor *editor_) : board(board_),
+                                                        editor(editor_)
 {
 
     channelViewport = std::make_unique<Viewport>();
+    channelsTable = std::make_unique<ChannelsMainComponent>();
 
-    channelList = std::make_unique<ChannelList>(board, editor);
-
-    channelViewport->setViewedComponent(channelList.get(), false);
-    channelViewport->setScrollBarsShown(true, true);
+    channelViewport->setViewedComponent(channelsTable.get(), false);
     addAndMakeVisible(channelViewport.get());
 
     update();
-
     resized();
 }
 
-void ChannelCanvas::paint(Graphics &g)
+void ChannelsCanvas::paint(Graphics &g)
 {
     g.fillAll(Colours::grey);
 }
 
-void ChannelCanvas::refresh()
+void ChannelsCanvas::refresh()
 {
     repaint();
 }
 
-void ChannelCanvas::refreshState()
+void ChannelsCanvas::refreshState()
 {
     resized();
 }
 
-void ChannelCanvas::update()
+void ChannelsCanvas::update()
 {
 
-    channelList->update();
+    // channelList->update();
 }
 
-void ChannelCanvas::beginAnimation()
+void ChannelsCanvas::beginAnimation()
 {
-    channelList->disableAll();
+    // channelList->disableAll();
 }
 
-void ChannelCanvas::endAnimation()
+void ChannelsCanvas::endAnimation()
 {
-    channelList->enableAll();
+    // channelList->enableAll();
 }
 
-void ChannelCanvas::resized()
+void ChannelsCanvas::resized()
 {
-
-    int scrollBarThickness = channelViewport->getScrollBarThickness();
-
     channelViewport->setBounds(0, 0, getWidth(), getHeight());
-
-    channelList->setBounds(0, 0, getWidth() - scrollBarThickness, 200 + 22 * channelList->getMaxChannels());
+    channelsTable->setBounds(0, 0, getWidth(), getHeight());
 }
