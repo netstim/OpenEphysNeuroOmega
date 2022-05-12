@@ -29,6 +29,7 @@
 #include "DeviceEditor.h"
 
 #include <ctime>
+#include <math.h>
 
 // AlphaOmega SDK
 namespace AO
@@ -40,6 +41,9 @@ namespace AO
 
 using namespace AONode;
 
+#define AO_BUFFER_SIZE_MS 5000
+#define SOURCE_BUFFER_SIZE 10000
+
 DataThread *DeviceThread::createDataThread(SourceNode *sn)
 {
     return new DeviceThread(sn);
@@ -50,7 +54,7 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
                                              updateSettingsDuringAcquisition(false)
 {
 
-    sourceBuffers.add(new DataBuffer(2, 10000)); // start with 2 channels and automatically resize
+    sourceBuffers.add(new DataBuffer(2, SOURCE_BUFFER_SIZE)); // start with 2 channels and automatically resize
     queryUserStartConnection();
 
     channelNames.clear();
@@ -69,7 +73,7 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
     if (testing)
     {
         channelNames.add("TestChannel1");
-        // channelNames.add("TestChannel2");
+        channelNames.add("TestChannel2");
     }
 
     numberOfChannels = channelNames.size();
@@ -152,7 +156,7 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
         "RAW",
         "description",
         "identifier",
-        static_cast<float>(1000) // TODO: sampling rate
+        static_cast<float>(testingSamplingRate) // TODO: sampling rate
     };
 
     DataStream *stream = new DataStream(dataStreamSettings);
@@ -208,29 +212,30 @@ bool DeviceThread::foundInputSource()
 
 bool DeviceThread::startAcquisition()
 {
-    pArray = new AO::int16[10000];
-    ArraySize = 10000;
-    actualData = 0;
-    arrChannel[0] = 10000;
-    arrChannel[1] = 10001;
-    arrChannel[2] = 10002;
+    // Neuro Omega Buffer
+    deviceDataArraySize = 10000;
+    deviceDataArray = new AO::int16[deviceDataArraySize];
 
+    // Source Buffer
+    sourceBufferData = new float[numberOfChannels];
     numItems = 1;
-    sampleNumbers = new int64[numItems];
-    sampleNumbers[0] = 0;
-    timestamps = new double[numItems];
+    totalSamplesSinceStart = new int64[numItems];
+    totalSamplesSinceStart[0] = 0;
+    timeStamps = new double[numItems];
     eventCodes = new uint64[numItems];
     chunkSize = 1;
 
+    // TODO : add buffering channels
+    arrChannel[0] = 10000;
+    arrChannel[1] = 10001;
     if (foundInputSource())
     {
-        AO::AddBufferChannel(10000, ArraySize);
-        AO::AddBufferChannel(10001, ArraySize);
-        AO::AddBufferChannel(10002, ArraySize);
+        AO::AddBufferChannel(10000, AO_BUFFER_SIZE_MS);
+        AO::AddBufferChannel(10001, AO_BUFFER_SIZE_MS);
         AO::ClearBuffers();
     }
 
-    sourceBuffers[0]->resize(numberOfChannels, ArraySize);
+    sourceBuffers[0]->resize(numberOfChannels, SOURCE_BUFFER_SIZE);
 
     startThread();
 
@@ -255,52 +260,56 @@ bool DeviceThread::stopAcquisition()
 
 bool DeviceThread::updateBuffer()
 {
-    float *data = new float[numberOfChannels];
+    int numberOfSamplesPerChannel;
 
     // Gather Data
     if (testing)
     {
         int sleepTimeMiliS = 100;
         Thread::sleep(sleepTimeMiliS);
-        actualData = sleepTimeMiliS / 1000.0 * 1000.0 * numberOfChannels;
-        for (int i = 0; i < numberOfChannels; i++)
+        numberOfSamplesPerChannel = sleepTimeMiliS / 1000.0 * testingSamplingRate;
+        numberOfSamplesFromDevice = numberOfSamplesPerChannel * numberOfChannels;
+        for (int samp = 0; samp < numberOfSamplesPerChannel; samp++)
         {
-            for (int j = 0; j < (actualData / numberOfChannels); j++)
+            for (int chan = 0; chan < numberOfChannels; chan++)
             {
-                pArray[(i * (actualData / numberOfChannels)) + j] = j;
+                deviceDataArray[(chan * numberOfSamplesPerChannel) + samp] = pow(-1, chan) * samp;
             }
         }
+        timeStamps[0] = float(std::time(0));
+        eventCodes[0] = 1;
     }
     else if (foundInputSource() && !testing)
     {
-        AO::GetAlignedData(pArray, ArraySize, &actualData, arrChannel, numberOfChannels, &TS_Begin);
+        int status = AO::eAO_MEM_EMPTY;
+        while (status == AO::eAO_MEM_EMPTY || numberOfSamplesFromDevice == 0)
+            status = AO::GetAlignedData(deviceDataArray, deviceDataArraySize, &numberOfSamplesFromDevice, arrChannel, numberOfChannels, &deviceTimeStamp);
+        numberOfSamplesPerChannel = numberOfSamplesFromDevice / numberOfChannels;
+        timeStamps[0] = float(deviceTimeStamp);
+        eventCodes[0] = 1;
     }
     else
     {
         return false;
     }
 
-    // output
-    timestamps[0] = float(std::time(0));
-    eventCodes[0] = 1;
-
-    int nSamps = actualData / numberOfChannels;
-    for (int samp = 0; samp < nSamps; samp++)
+    // add to source buffer
+    for (int samp = 0; samp < numberOfSamplesPerChannel; samp++)
     {
         for (int chan = 0; chan < numberOfChannels; chan++)
         {
-            data[chan] = pArray[(chan * nSamps) + samp];
+            sourceBufferData[chan] = deviceDataArray[(chan * numberOfSamplesPerChannel) + samp];
         }
 
-        sampleNumbers[0] = sampleNumbers[0] + 1;
-        timestamps[0] = timestamps[0] + 0.001 * samp;
-
-        sourceBuffers[0]->addToBuffer(data,
-                                      sampleNumbers,
-                                      timestamps,
+        sourceBuffers[0]->addToBuffer(sourceBufferData,
+                                      totalSamplesSinceStart,
+                                      timeStamps,
                                       eventCodes,
                                       numItems,
                                       chunkSize);
+
+        totalSamplesSinceStart[0]++;
+        timeStamps[0] = timeStamps[0] + (1.0 / testingSamplingRate) * samp;
     }
 
     return true;

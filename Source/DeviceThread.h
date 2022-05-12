@@ -58,13 +58,13 @@ namespace AONode
 		/** Creates the UI for this plugin */
 		std::unique_ptr<GenericEditor> createEditor(SourceNode *sn);
 
-		/** Fills the DataBuffer with incoming data */
+		/** Fills the DataBuffer with incoming sourceBufferData */
 		bool updateBuffer() override;
 
-		/** Initializes data transfer*/
+		/** Initializes sourceBufferData transfer*/
 		bool startAcquisition() override;
 
-		/** Stops data transfer */
+		/** Stops sourceBufferData transfer */
 		bool stopAcquisition() override;
 
 		/* Passes the processor's info objects to DataThread, to allow them to be configured */
@@ -90,21 +90,22 @@ namespace AONode
 		int getNumberOfChannels() { return numberOfChannels; };
 
 	private:
-		// AO
-		AO::int16 *pArray;
-		int ArraySize;
-		int actualData;
+		// Neuro Omega Buffer
+		AO::int16 *deviceDataArray;
+		int deviceDataArraySize;
+		int numberOfSamplesFromDevice;
+		AO::ULONG deviceTimeStamp;
 		int arrChannel[3];
-		AO::ULONG TS_Begin;
-		int64 timestamp;
 
+		// Source Buffer
+		float *sourceBufferData;
 		int numItems;
-		int64 *sampleNumbers;
-		double *timestamps;
+		int64 *totalSamplesSinceStart;
+		double *timeStamps;
 		uint64 *eventCodes;
 		int chunkSize;
 
-		/** True if data is streaming*/
+		/** True if sourceBufferData is streaming*/
 		bool isTransmitting;
 
 		/** True if change in settings is needed during acquisition*/
@@ -119,6 +120,7 @@ namespace AONode
 
 		/** Testing */
 		bool testing = true;
+		float testingSamplingRate = 1000.0;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeviceThread);
 	};
