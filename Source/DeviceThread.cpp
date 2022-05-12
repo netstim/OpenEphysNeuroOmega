@@ -187,10 +187,10 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
     {
         ContinuousChannel::Settings channelSettings{
             ContinuousChannel::ELECTRODE,
-            getNthChannelName(ch),
+            channelsInformation->getChildElement(ch)->getStringAttribute("Name"),
             "description",
             "identifier",
-            0.195,
+            channelsInformation->getChildElement(ch)->getDoubleAttribute("Bit resolution") / channelsInformation->getChildElement(ch)->getDoubleAttribute("Gain"),
             stream};
 
         continuousChannels->add(new ContinuousChannel(channelSettings));
@@ -245,13 +245,12 @@ bool DeviceThread::startAcquisition()
     eventCodes = new uint64[numItems];
     chunkSize = 1;
 
-    // TODO : add buffering channels
-    arrChannel[0] = 10000;
-    arrChannel[1] = 10001;
     if (foundInputSource())
     {
-        AO::AddBufferChannel(10000, AO_BUFFER_SIZE_MS);
-        AO::AddBufferChannel(10001, AO_BUFFER_SIZE_MS);
+        for (int i = 0; i < numberOfChannels; i++)
+        {
+            AO::AddBufferChannel(channelsInformation->getChildElement(i)->getIntAttribute("ID"), AO_BUFFER_SIZE_MS);
+        }
         AO::ClearBuffers();
     }
 
@@ -301,6 +300,9 @@ bool DeviceThread::updateBuffer()
     }
     else if (foundInputSource() && !testing)
     {
+        int *arrChannel = new int[numberOfChannels];
+        for (int i = 0; i < numberOfChannels; i++)
+            arrChannel[i] = channelsInformation->getChildElement(i)->getIntAttribute("ID");
         int status = AO::eAO_MEM_EMPTY;
         while (status == AO::eAO_MEM_EMPTY || numberOfSamplesFromDevice == 0)
             status = AO::GetAlignedData(deviceDataArray, deviceDataArraySize, &numberOfSamplesFromDevice, arrChannel, numberOfChannels, &deviceTimeStamp);

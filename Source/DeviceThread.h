@@ -86,7 +86,6 @@ namespace AONode
 
 		static DataThread *createDataThread(SourceNode *sn);
 
-		String getNthChannelName(int ch) const { return channelsInformation->getChildElement(ch)->getStringAttribute("Name"); };
 		XmlElement *getChannelsInformation() { return channelsInformation; };
 
 	private:
@@ -99,7 +98,6 @@ namespace AONode
 		int deviceDataArraySize;
 		int numberOfSamplesFromDevice;
 		AO::ULONG deviceTimeStamp;
-		int arrChannel[3];
 
 		// Source Buffer
 		float *sourceBufferData;
