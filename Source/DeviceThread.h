@@ -91,7 +91,9 @@ namespace AONode
 	private:
 		// Channels info
 		XmlElement *channelsInformation = nullptr;
+		XmlElement *streamsInformation = nullptr;
 		int numberOfChannels;
+		int numberOfStreams;
 
 		// Neuro Omega Buffer
 		AO::int16 *deviceDataArray;
