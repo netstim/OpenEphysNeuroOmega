@@ -36,9 +36,14 @@ ChannelsCanvas::ChannelsCanvas(DeviceThread *board_,
 {
 
     channelViewport = std::make_unique<Viewport>();
+    channelTab = std::make_unique<TabbedComponent>(TabbedButtonBar::TabsAtRight);
+
     channelsTable = std::make_unique<ChannelsMainComponent>(board->getChannelsInformation());
 
-    channelViewport->setViewedComponent(channelsTable.get(), false);
+    channelTab->addTab("Channels", Colours::grey, channelsTable.get(), 0, 0);
+    channelTab->addTab("Streams", Colours::grey, channelsTable.get(), 0, 1);
+
+    channelViewport->setViewedComponent(channelTab.get(), false);
     addAndMakeVisible(channelViewport.get());
 
     update();
@@ -47,7 +52,7 @@ ChannelsCanvas::ChannelsCanvas(DeviceThread *board_,
 
 void ChannelsCanvas::paint(Graphics &g)
 {
-    g.fillAll(Colours::grey);
+    g.fillAll(Colours::lightgrey);
 }
 
 void ChannelsCanvas::refresh()
@@ -79,5 +84,5 @@ void ChannelsCanvas::endAnimation()
 void ChannelsCanvas::resized()
 {
     channelViewport->setBounds(0, 0, getWidth(), getHeight());
-    channelsTable->setBounds(0, 0, getWidth(), getHeight());
+    channelTab->setBounds(0, 0, getWidth(), getHeight());
 }

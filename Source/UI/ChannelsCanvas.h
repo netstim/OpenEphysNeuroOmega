@@ -75,6 +75,7 @@ namespace AONode
 
 		/** Child components*/
 		std::unique_ptr<Viewport> channelViewport;
+		std::unique_ptr<TabbedComponent> channelTab;
 		std::unique_ptr<ChannelsMainComponent> channelsTable;
 
 		/** Pointer to the acquisition device */
