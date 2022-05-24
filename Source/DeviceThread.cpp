@@ -73,7 +73,7 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
         pChannelsInfo[2].channelID = 2;
         pChannelsInfo[3].channelID = 3;
         testChannelNames.push_back("RAW Name1");
-        testChannelNames.push_back("RAW Name1");
+        testChannelNames.push_back("RAW Name2");
         testChannelNames.push_back("SPK Name1");
         testChannelNames.push_back("SPK Name2");
     }
@@ -98,9 +98,9 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
             stream = new XmlElement("STREAM");
             stream->setAttribute("ID", streamID);
             stream->setAttribute("Name", streamName);
-            stream->setAttribute("Sampling Rate", 44000);
-            stream->setAttribute("Bit Resolution", 38.147);
-            stream->setAttribute("Gain", 20);
+            stream->setAttribute("Sampling Rate", 1000); // 44000
+            stream->setAttribute("Bit Resolution", 1);   // 38.147
+            stream->setAttribute("Gain", 1);             // 20
             streamsInformation->addChildElement(stream);
         }
         channel = new XmlElement("CHANNEL");
@@ -120,7 +120,6 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
     {
         streamsInformation->getChildElement(i)->setAttribute("Channel IDs", "");
         numberOfChannelsInStream = 0;
-        streamsInformation->getChildElement(i)->setAttribute("Number Of Channels", 0);
         for (int ch = 0; ch < numberOfChannels; ch++)
         {
             if (channelsInformation->getChildElement(ch)->getIntAttribute("Stream ID") == i)
@@ -248,19 +247,16 @@ bool DeviceThread::startAcquisition()
     deviceDataArraySize = 10000;
     deviceDataArray = new AO::int16[deviceDataArraySize];
 
-    if (foundInputSource())
-    {
-        for (int i = 0; i < numberOfChannels; i++)
-        {
-            AO::AddBufferChannel(channelsInformation->getChildElement(i)->getIntAttribute("ID"), AO_BUFFER_SIZE_MS);
-        }
-        AO::ClearBuffers();
-    }
-
     for (int i = 0; i < numberOfStreams; i++)
     {
         streamsInformation->getChildElement(i)->setAttribute("totalSamplesSinceStart", 0);
     }
+
+    for (int i = 0; i < numberOfChannels; i++)
+    {
+        AO::AddBufferChannel(channelsInformation->getChildElement(i)->getIntAttribute("ID"), AO_BUFFER_SIZE_MS);
+    }
+    AO::ClearBuffers();
 
     startThread();
 
@@ -289,60 +285,47 @@ bool DeviceThread::stopAcquisition()
 
 bool DeviceThread::updateBuffer()
 {
-    int numberOfSamplesPerChannel;
+    int sleepTimeMiliS = 100;
+    if (testing)
+    {
+        deviceTimeStamp = std::time(0);
+        Thread::sleep(sleepTimeMiliS);
+    }
 
-    // Gather Data
-    // if (testing)
-    // {
-    //     int sleepTimeMiliS = 100;
-    //     Thread::sleep(sleepTimeMiliS);
-    //     numberOfSamplesPerChannel = sleepTimeMiliS / 1000.0 * testingSamplingRate;
-    //     numberOfSamplesFromDevice = numberOfSamplesPerChannel * numberOfChannels;
-    //     for (int samp = 0; samp < numberOfSamplesPerChannel; samp++)
-    //     {
-    //         for (int chan = 0; chan < numberOfChannels; chan++)
-    //         {
-    //             deviceDataArray[(chan * numberOfSamplesPerChannel) + samp] = pow(-1, chan) * samp;
-    //         }
-    //     }
-    //     timeStamps[0] = float(std::time(0));
-    //     eventCodes[0] = 1;
-    // }
-    // else if (foundInputSource() && !testing)
-    // {
-    //     int *arrChannel = new int[numberOfChannels];
-    //     for (int i = 0; i < numberOfChannels; i++)
-    //         arrChannel[i] = channelsInformation->getChildElement(i)->getIntAttribute("ID");
-    //     int status = AO::eAO_MEM_EMPTY;
-    //     while (status == AO::eAO_MEM_EMPTY || numberOfSamplesFromDevice == 0)
-    //         status = AO::GetAlignedData(deviceDataArray, deviceDataArraySize, &numberOfSamplesFromDevice, arrChannel, numberOfChannels, &deviceTimeStamp);
-    //     numberOfSamplesPerChannel = numberOfSamplesFromDevice / numberOfChannels;
-    //     timeStamps[0] = float(deviceTimeStamp);
-    //     eventCodes[0] = 1;
-    // }
-    // else
-    // {
-    //     return false;
-    // }
+    int numberOfSamplesPerChannel;
 
     for (int i = 0; i < numberOfStreams; i++)
     {
-
         int numberOfChannelsInStream = streamsInformation->getChildElement(i)->getIntAttribute("Number Of Channels");
-        int *arrChannel = new int[numberOfChannelsInStream];
-        StringArray channelIDs;
-        channelIDs.addTokens(streamsInformation->getChildElement(i)->getStringAttribute("Channel IDs"), ",", "\"");
-        for (int ch = 0; ch < channelIDs.size(); ch++)
+
+        if (testing)
         {
-            arrChannel[ch] = std::stoi(channelIDs[ch].toStdString());
+            numberOfSamplesPerChannel = sleepTimeMiliS / 1000.0 * streamsInformation->getChildElement(i)->getDoubleAttribute("Sampling Rate");
+            numberOfSamplesFromDevice = numberOfSamplesPerChannel * numberOfChannelsInStream;
+            for (int samp = 0; samp < numberOfSamplesPerChannel; samp++)
+            {
+                for (int chan = 0; chan < numberOfChannelsInStream; chan++)
+                {
+                    deviceDataArray[(chan * numberOfSamplesPerChannel) + samp] = pow(-1, i) * samp * (chan + 1);
+                }
+            }
+        }
+        else
+        {
+            int *arrChannel = new int[numberOfChannelsInStream];
+            StringArray channelIDs;
+            channelIDs.addTokens(streamsInformation->getChildElement(i)->getStringAttribute("Channel IDs"), ",", "\"");
+            for (int ch = 0; ch < channelIDs.size(); ch++)
+            {
+                arrChannel[ch] = std::stoi(channelIDs[ch].toStdString());
+            }
+
+            int status = AO::eAO_MEM_EMPTY;
+            while (status == AO::eAO_MEM_EMPTY || numberOfSamplesFromDevice == 0)
+                status = AO::GetAlignedData(deviceDataArray, deviceDataArraySize, &numberOfSamplesFromDevice, arrChannel, numberOfChannelsInStream, &deviceTimeStamp);
+            numberOfSamplesPerChannel = numberOfSamplesFromDevice / numberOfChannelsInStream;
         }
 
-        int status = AO::eAO_MEM_EMPTY;
-        while (status == AO::eAO_MEM_EMPTY || numberOfSamplesFromDevice == 0)
-            status = AO::GetAlignedData(deviceDataArray, deviceDataArraySize, &numberOfSamplesFromDevice, arrChannel, numberOfChannelsInStream, &deviceTimeStamp);
-        numberOfSamplesPerChannel = numberOfSamplesFromDevice / numberOfChannelsInStream;
-
-        // add to source buffer
         totalSamplesSinceStart = new int64[numberOfSamplesPerChannel];
         timeStamps = new double[numberOfSamplesPerChannel];
         eventCodes = new uint64[numberOfSamplesPerChannel];
@@ -351,15 +334,19 @@ bool DeviceThread::updateBuffer()
         {
             totalSamplesSinceStart[s] = streamsInformation->getChildElement(i)->getIntAttribute("totalSamplesSinceStart") + s;
             timeStamps[s] = float(deviceTimeStamp) + s / streamsInformation->getChildElement(i)->getDoubleAttribute("Sampling Rate");
-            eventCodes[s] = 0;
+            eventCodes[s] = 1;
         }
 
         streamsInformation->getChildElement(i)->setAttribute("totalSamplesSinceStart", std::to_string(totalSamplesSinceStart[numberOfSamplesPerChannel - 1] + 1));
 
         sourceBufferData = new float[numberOfSamplesFromDevice];
-        for (int samp = 0; samp < numberOfSamplesFromDevice; samp++)
+        int j = 0;
+        for (int samp = 0; samp < numberOfSamplesPerChannel; samp++)
         {
-            sourceBufferData[samp] = deviceDataArray[samp] * streamsInformation->getChildElement(i)->getDoubleAttribute("Bit Resolution") / streamsInformation->getChildElement(i)->getDoubleAttribute("Gain");
+            for (int chan = 0; chan < numberOfChannelsInStream; chan++)
+            {
+                sourceBufferData[j++] = deviceDataArray[(chan * numberOfSamplesPerChannel) + samp] * streamsInformation->getChildElement(i)->getDoubleAttribute("Bit Resolution") / streamsInformation->getChildElement(i)->getDoubleAttribute("Gain");
+            }
         }
 
         sourceBuffers[i]->addToBuffer(sourceBufferData,
@@ -367,7 +354,7 @@ bool DeviceThread::updateBuffer()
                                       timeStamps,
                                       eventCodes,
                                       numberOfSamplesPerChannel,
-                                      numberOfSamplesPerChannel);
+                                      1);
     }
     return true;
 }

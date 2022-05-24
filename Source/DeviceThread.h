@@ -120,7 +120,6 @@ namespace AONode
 
 		/** Testing */
 		bool testing = true;
-		float testingSamplingRate = 1000.0;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeviceThread);
 	};
