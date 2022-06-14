@@ -144,6 +144,7 @@ namespace AONode
         {
             const auto &columnName = table.getHeader().getColumnName(columnNumber);
             dataList->getChildElement(rowNumber)->setAttribute(columnName, newText);
+            xmlModifiedBroadcaster.sendActionMessage("Xml Modified");
         }
 
         //==============================================================================
@@ -151,6 +152,8 @@ namespace AONode
         {
             table.setBoundsInset(BorderSize<int>(8));
         }
+
+        ActionBroadcaster xmlModifiedBroadcaster;
 
     private:
         TableListBox table{{}, this};
@@ -274,6 +277,11 @@ namespace AONode
         void resized() override
         {
             table.setBounds(getLocalBounds());
+        }
+
+        void addXmlModifiedListener(ActionListener *l)
+        {
+            table.xmlModifiedBroadcaster.addActionListener(l);
         }
 
     private:

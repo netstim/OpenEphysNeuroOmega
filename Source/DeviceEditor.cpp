@@ -444,7 +444,14 @@ Visualizer *DeviceEditor::createNewCanvas()
 
     canvas = new ChannelsStreamsCanvas(board, this);
 
+    canvas->streamsTable->addXmlModifiedListener(this);
+
     return canvas;
+}
+
+void DeviceEditor::actionListenerCallback(const String &message)
+{
+    CoreServices::updateSignalChain(this);
 }
 
 // // Bandwidth Options --------------------------------------------------------------------

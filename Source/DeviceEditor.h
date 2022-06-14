@@ -43,7 +43,8 @@ namespace AONode
 	class DeviceEditor : public VisualizerEditor,
 						 public ComboBox::Listener,
 						 public Button::Listener,
-						 public PopupChannelSelector::Listener
+						 public PopupChannelSelector::Listener,
+						 public ActionListener
 
 	{
 	public:
@@ -85,6 +86,9 @@ namespace AONode
 
 		/** Called by PopupChannelSelector */
 		void channelStateChanged(Array<int> newChannels) override;
+
+		/** Called when a new message is received. */
+		void actionListenerCallback(const String &message);
 
 	private:
 		// OwnedArray<HeadstageOptionsInterface> headstageOptionsInterfaces;
