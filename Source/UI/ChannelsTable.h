@@ -15,9 +15,9 @@ namespace AONode
         {
         }
 
-        void init(XmlElement *channelsInformation)
+        void init(XmlElement *channelsXmlList)
         {
-            dataList = channelsInformation;
+            dataList = channelsXmlList;
             numRows = dataList->getNumChildElements();
             setUpHeaders();
 
@@ -255,9 +255,9 @@ namespace AONode
     {
     public:
         //==============================================================================
-        ChannelsMainComponent(XmlElement *channelsInformation)
+        ChannelsMainComponent(XmlElement *channelsXmlList)
         {
-            table.init(channelsInformation);
+            table.init(channelsXmlList);
 
             addAndMakeVisible(table);
 

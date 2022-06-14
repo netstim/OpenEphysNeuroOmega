@@ -78,8 +78,8 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
         testChannelNames.push_back("SPK Name2");
     }
 
-    channelsInformation = new XmlElement("CHANNELS");
-    streamsInformation = new XmlElement("STREAMS");
+    channelsXmlList = new XmlElement("CHANNELS");
+    streamsXmlList = new XmlElement("STREAMS");
 
     XmlElement *channel, *stream;
     std::string channelName, streamName;
@@ -92,7 +92,7 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
         else
             channelName = pChannelsInfo[ch].channelName;
         streamName = channelName.substr(0, channelName.find(" "));
-        if (streamID < 0 || (streamName.compare(streamsInformation->getChildElement(streamID)->getStringAttribute("Name").toStdString()) != 0))
+        if (streamID < 0 || (streamName.compare(streamsXmlList->getChildElement(streamID)->getStringAttribute("Name").toStdString()) != 0))
         {
             streamID++;
             stream = new XmlElement("STREAM");
@@ -101,38 +101,38 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
             stream->setAttribute("Sampling Rate", 1000); // 44000
             stream->setAttribute("Bit Resolution", 1);   // 38.147
             stream->setAttribute("Gain", 1);             // 20
-            streamsInformation->addChildElement(stream);
+            streamsXmlList->addChildElement(stream);
         }
         channel = new XmlElement("CHANNEL");
         channel->setAttribute("ID", pChannelsInfo[ch].channelID);
         channel->setAttribute("Name", channelName);
         channel->setAttribute("Stream ID", streamID);
-        channelsInformation->addChildElement(channel);
+        channelsXmlList->addChildElement(channel);
     }
 
-    numberOfChannels = channelsInformation->getNumChildElements();
-    numberOfStreams = streamsInformation->getNumChildElements();
+    numberOfChannels = channelsXmlList->getNumChildElements();
+    numberOfStreams = streamsXmlList->getNumChildElements();
 
     std::string channelIDs;
     int numberOfChannelsInStream;
 
     for (int i = 0; i < numberOfStreams; i++)
     {
-        streamsInformation->getChildElement(i)->setAttribute("Channel IDs", "");
+        streamsXmlList->getChildElement(i)->setAttribute("Channel IDs", "");
         numberOfChannelsInStream = 0;
         for (int ch = 0; ch < numberOfChannels; ch++)
         {
-            if (channelsInformation->getChildElement(ch)->getIntAttribute("Stream ID") == i)
+            if (channelsXmlList->getChildElement(ch)->getIntAttribute("Stream ID") == i)
             {
-                channelIDs = streamsInformation->getChildElement(i)->getStringAttribute("Channel IDs").toStdString();
+                channelIDs = streamsXmlList->getChildElement(i)->getStringAttribute("Channel IDs").toStdString();
                 if (channelIDs.compare("") != 0)
                     channelIDs.append(",");
-                channelIDs.append(channelsInformation->getChildElement(ch)->getStringAttribute("ID").toStdString());
-                streamsInformation->getChildElement(i)->setAttribute("Channel IDs", channelIDs);
+                channelIDs.append(channelsXmlList->getChildElement(ch)->getStringAttribute("ID").toStdString());
+                streamsXmlList->getChildElement(i)->setAttribute("Channel IDs", channelIDs);
                 numberOfChannelsInStream++;
             }
         }
-        streamsInformation->getChildElement(i)->setAttribute("Number Of Channels", numberOfChannelsInStream);
+        streamsXmlList->getChildElement(i)->setAttribute("Number Of Channels", numberOfChannelsInStream);
         sourceBuffers.add(new DataBuffer(numberOfChannelsInStream, SOURCE_BUFFER_SIZE));
     }
 }
@@ -213,23 +213,23 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
 
     for (int ch = 0; ch < numberOfChannels; ch++)
     {
-        if (streamID != channelsInformation->getChildElement(ch)->getIntAttribute("Stream ID"))
+        if (streamID != channelsXmlList->getChildElement(ch)->getIntAttribute("Stream ID"))
         {
-            streamID = channelsInformation->getChildElement(ch)->getIntAttribute("Stream ID");
+            streamID = channelsXmlList->getChildElement(ch)->getIntAttribute("Stream ID");
             DataStream::Settings dataStreamSettings{
-                streamsInformation->getChildElement(streamID)->getStringAttribute("Name"),
+                streamsXmlList->getChildElement(streamID)->getStringAttribute("Name"),
                 "description",
                 "identifier",
-                streamsInformation->getChildElement(streamID)->getDoubleAttribute("Sampling Rate")};
+                streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling Rate")};
             stream = new DataStream(dataStreamSettings);
             sourceStreams->add(stream);
         }
         ContinuousChannel::Settings channelSettings{
             ContinuousChannel::ELECTRODE,
-            channelsInformation->getChildElement(ch)->getStringAttribute("Name"),
+            channelsXmlList->getChildElement(ch)->getStringAttribute("Name"),
             "description",
             "identifier",
-            streamsInformation->getChildElement(streamID)->getDoubleAttribute("Bit Resolution") / streamsInformation->getChildElement(streamID)->getDoubleAttribute("Gain"),
+            streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain"),
             stream};
         continuousChannels->add(new ContinuousChannel(channelSettings));
         continuousChannels->getLast()->setUnits("uV");
@@ -249,12 +249,12 @@ bool DeviceThread::startAcquisition()
 
     for (int i = 0; i < numberOfStreams; i++)
     {
-        streamsInformation->getChildElement(i)->setAttribute("totalSamplesSinceStart", 0);
+        streamsXmlList->getChildElement(i)->setAttribute("totalSamplesSinceStart", 0);
     }
 
     for (int i = 0; i < numberOfChannels; i++)
     {
-        AO::AddBufferChannel(channelsInformation->getChildElement(i)->getIntAttribute("ID"), AO_BUFFER_SIZE_MS);
+        AO::AddBufferChannel(channelsXmlList->getChildElement(i)->getIntAttribute("ID"), AO_BUFFER_SIZE_MS);
     }
     AO::ClearBuffers();
 
@@ -275,7 +275,7 @@ bool DeviceThread::stopAcquisition()
     for (int i = 0; i < numberOfStreams; i++)
     {
         sourceBuffers[i]->clear();
-        streamsInformation->getChildElement(i)->setAttribute("totalSamplesSinceStart", 0);
+        streamsXmlList->getChildElement(i)->setAttribute("totalSamplesSinceStart", 0);
     }
 
     isTransmitting = false;
@@ -296,11 +296,11 @@ bool DeviceThread::updateBuffer()
 
     for (int i = 0; i < numberOfStreams; i++)
     {
-        int numberOfChannelsInStream = streamsInformation->getChildElement(i)->getIntAttribute("Number Of Channels");
+        int numberOfChannelsInStream = streamsXmlList->getChildElement(i)->getIntAttribute("Number Of Channels");
 
         if (testing)
         {
-            numberOfSamplesPerChannel = sleepTimeMiliS / 1000.0 * streamsInformation->getChildElement(i)->getDoubleAttribute("Sampling Rate");
+            numberOfSamplesPerChannel = sleepTimeMiliS / 1000.0 * streamsXmlList->getChildElement(i)->getDoubleAttribute("Sampling Rate");
             numberOfSamplesFromDevice = numberOfSamplesPerChannel * numberOfChannelsInStream;
             for (int samp = 0; samp < numberOfSamplesPerChannel; samp++)
             {
@@ -314,7 +314,7 @@ bool DeviceThread::updateBuffer()
         {
             int *arrChannel = new int[numberOfChannelsInStream];
             StringArray channelIDs;
-            channelIDs.addTokens(streamsInformation->getChildElement(i)->getStringAttribute("Channel IDs"), ",", "\"");
+            channelIDs.addTokens(streamsXmlList->getChildElement(i)->getStringAttribute("Channel IDs"), ",", "\"");
             for (int ch = 0; ch < channelIDs.size(); ch++)
             {
                 arrChannel[ch] = std::stoi(channelIDs[ch].toStdString());
@@ -332,12 +332,12 @@ bool DeviceThread::updateBuffer()
 
         for (int s = 0; s < numberOfSamplesPerChannel; s++)
         {
-            totalSamplesSinceStart[s] = streamsInformation->getChildElement(i)->getIntAttribute("totalSamplesSinceStart") + s;
-            timeStamps[s] = float(deviceTimeStamp) + s / streamsInformation->getChildElement(i)->getDoubleAttribute("Sampling Rate");
+            totalSamplesSinceStart[s] = streamsXmlList->getChildElement(i)->getIntAttribute("totalSamplesSinceStart") + s;
+            timeStamps[s] = float(deviceTimeStamp) + s / streamsXmlList->getChildElement(i)->getDoubleAttribute("Sampling Rate");
             eventCodes[s] = 1;
         }
 
-        streamsInformation->getChildElement(i)->setAttribute("totalSamplesSinceStart", std::to_string(totalSamplesSinceStart[numberOfSamplesPerChannel - 1] + 1));
+        streamsXmlList->getChildElement(i)->setAttribute("totalSamplesSinceStart", std::to_string(totalSamplesSinceStart[numberOfSamplesPerChannel - 1] + 1));
 
         sourceBufferData = new float[numberOfSamplesFromDevice];
         int j = 0;
@@ -345,7 +345,7 @@ bool DeviceThread::updateBuffer()
         {
             for (int chan = 0; chan < numberOfChannelsInStream; chan++)
             {
-                sourceBufferData[j++] = deviceDataArray[(chan * numberOfSamplesPerChannel) + samp] * streamsInformation->getChildElement(i)->getDoubleAttribute("Bit Resolution") / streamsInformation->getChildElement(i)->getDoubleAttribute("Gain");
+                sourceBufferData[j++] = deviceDataArray[(chan * numberOfSamplesPerChannel) + samp] * streamsXmlList->getChildElement(i)->getDoubleAttribute("Bit Resolution") / streamsXmlList->getChildElement(i)->getDoubleAttribute("Gain");
             }
         }
 
