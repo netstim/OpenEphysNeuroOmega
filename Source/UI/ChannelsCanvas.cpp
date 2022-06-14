@@ -22,7 +22,7 @@
 */
 
 #include "ChannelsCanvas.h"
-#include "ChannelsTable.h"
+#include "XmlTable.h"
 
 #include "../DeviceThread.h"
 
@@ -38,7 +38,7 @@ ChannelsCanvas::ChannelsCanvas(DeviceThread *board_,
     channelViewport = std::make_unique<Viewport>();
     channelTab = std::make_unique<TabbedComponent>(TabbedButtonBar::TabsAtRight);
 
-    channelsTable = std::make_unique<ChannelsMainComponent>(board->getChannelsInformation());
+    channelsTable = std::make_unique<XmlTableMainComponent>(board->getChannelsInformation());
 
     channelTab->addTab("Channels", Colours::grey, channelsTable.get(), 0, 0);
     channelTab->addTab("Streams", Colours::grey, channelsTable.get(), 0, 1);

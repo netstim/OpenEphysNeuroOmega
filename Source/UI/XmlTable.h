@@ -251,11 +251,11 @@ namespace AONode
     };
 
     //==============================================================================
-    class ChannelsMainComponent : public Component
+    class XmlTableMainComponent : public Component
     {
     public:
         //==============================================================================
-        ChannelsMainComponent(XmlElement *channelsXmlList)
+        XmlTableMainComponent(XmlElement *channelsXmlList)
         {
             table.init(channelsXmlList);
 
@@ -278,6 +278,6 @@ namespace AONode
         //==============================================================================
         TableComponent table;
 
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ChannelsMainComponent)
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(XmlTableMainComponent)
     };
 }

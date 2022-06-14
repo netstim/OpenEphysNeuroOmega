@@ -24,7 +24,7 @@
 #ifndef __CHANNELCANVAS_H_2AD3C591__
 #define __CHANNELCANVAS_H_2AD3C591__
 
-#include "ChannelsTable.h"
+#include "XmlTable.h"
 
 #include <VisualizerEditorHeaders.h>
 
@@ -76,7 +76,7 @@ namespace AONode
 		/** Child components*/
 		std::unique_ptr<Viewport> channelViewport;
 		std::unique_ptr<TabbedComponent> channelTab;
-		std::unique_ptr<ChannelsMainComponent> channelsTable;
+		std::unique_ptr<XmlTableMainComponent> channelsTable;
 
 		/** Pointer to the acquisition device */
 		DeviceThread *board;
