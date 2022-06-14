@@ -15,9 +15,9 @@ namespace AONode
         {
         }
 
-        void init(XmlElement *channelsXmlList)
+        void init(XmlElement *xmlList)
         {
-            dataList = channelsXmlList;
+            dataList = xmlList;
             numRows = dataList->getNumChildElements();
             setUpHeaders();
 
@@ -91,7 +91,9 @@ namespace AONode
         Component *refreshComponentForCell(int rowNumber, int columnId, bool /*isRowSelected*/,
                                            Component *existingComponentToUpdate) override
         {
-            if (columnId == 3 || columnId == 4 || columnId == 5)
+            String columnName = getAttributeNameForColumnId(columnId);
+
+            if (columnName == "Sampling Rate" || columnName == "Bit Resolution" || columnName == "Gain")
             {
                 auto *textLabel = static_cast<EditableTextCustomComponent *>(existingComponentToUpdate);
 
@@ -255,9 +257,9 @@ namespace AONode
     {
     public:
         //==============================================================================
-        XmlTableMainComponent(XmlElement *channelsXmlList)
+        XmlTableMainComponent(XmlElement *xmlList)
         {
-            table.init(channelsXmlList);
+            table.init(xmlList);
 
             addAndMakeVisible(table);
 

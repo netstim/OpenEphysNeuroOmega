@@ -42,15 +42,15 @@ namespace AONode
 
 	  */
 
-	class ChannelsCanvas : public Visualizer
+	class ChannelsStreamsCanvas : public Visualizer
 	{
 	public:
 		/** Constructor */
-		ChannelsCanvas(DeviceThread *board,
-					   DeviceEditor *editor);
+		ChannelsStreamsCanvas(DeviceThread *board,
+							  DeviceEditor *editor);
 
 		/** Destructor */
-		~ChannelsCanvas() {}
+		~ChannelsStreamsCanvas() {}
 
 		/** Render the background */
 		void paint(Graphics &g);
@@ -74,9 +74,10 @@ namespace AONode
 		void endAnimation();
 
 		/** Child components*/
-		std::unique_ptr<Viewport> channelViewport;
-		std::unique_ptr<TabbedComponent> channelTab;
+		std::unique_ptr<Viewport> channelStreamViewport;
+		std::unique_ptr<TabbedComponent> channelStreamTabs;
 		std::unique_ptr<XmlTableMainComponent> channelsTable;
+		std::unique_ptr<XmlTableMainComponent> streamsTable;
 
 		/** Pointer to the acquisition device */
 		DeviceThread *board;

@@ -36,7 +36,7 @@ namespace AONode
 	// class AudioInterface;
 	// class ClockDivideInterface;
 	class DeviceThread;
-	class ChannelsCanvas;
+	class ChannelsStreamsCanvas;
 
 	// struct ImpedanceData;
 
@@ -110,7 +110,7 @@ namespace AONode
 		bool saveImpedances, measureWhenRecording;
 
 		DeviceThread *board;
-		ChannelsCanvas *canvas;
+		ChannelsStreamsCanvas *canvas;
 
 		enum AudioChannel
 		{
