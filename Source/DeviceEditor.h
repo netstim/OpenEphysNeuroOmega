@@ -21,29 +21,14 @@
 
 */
 
-#ifndef __DEVICEEDITOR_H_2AD3C591__
-#define __DEVICEEDITOR_H_2AD3C591__
-
 #include <VisualizerEditorHeaders.h>
 
 namespace AONode
 {
-
-	// class HeadstageOptionsInterface;
-	// class SampleRateInterface;
-	// class BandwidthInterface;
-	// class DSPInterface;
-	// class AudioInterface;
-	// class ClockDivideInterface;
 	class DeviceThread;
 	class ChannelsStreamsCanvas;
 
-	// struct ImpedanceData;
-
 	class DeviceEditor : public VisualizerEditor,
-						 public ComboBox::Listener,
-						 public Button::Listener,
-						 public PopupChannelSelector::Listener,
 						 public ActionListener
 
 	{
@@ -54,184 +39,26 @@ namespace AONode
 		/** Destructor*/
 		~DeviceEditor() {}
 
-		/** Respond to combo box changes (e.g. sample rate)*/
-		void comboBoxChanged(ComboBox *comboBox);
-
-		/** Respond to button clicks*/
-		void buttonClicked(Button *button);
-
 		/** Disable UI during acquisition*/
 		void startAcquisition();
 
 		/** Enable UI after acquisition is finished*/
 		void stopAcquisition();
 
-		/** Runs impedance test*/
-		// void measureImpedance();
-
-		/** Saves impedance data to a file*/
-		// void saveImpedance(File &file);
-
 		/** Updates channel canvas*/
 		void updateSettings();
 
-		/** Saves custom parameters */
-		void saveVisualizerEditorParameters(XmlElement *xml) override;
-
-		/** Loads custom parameters*/
-		void loadVisualizerEditorParameters(XmlElement *xml) override;
-
 		/** Creates an interface with additional channel settings*/
 		Visualizer *createNewCanvas(void);
-
-		/** Called by PopupChannelSelector */
-		void channelStateChanged(Array<int> newChannels) override;
 
 		/** Called when a new message is received. */
 		void actionListenerCallback(const String &message);
 
 	private:
-		// OwnedArray<HeadstageOptionsInterface> headstageOptionsInterfaces;
-		OwnedArray<ElectrodeButton> electrodeButtons;
-
-		// ScopedPointer<SampleRateInterface> sampleRateInterface;
-		// ScopedPointer<BandwidthInterface> bandwidthInterface;
-		// ScopedPointer<DSPInterface> dspInterface;
-
-		// ScopedPointer<AudioInterface> audioInterface;
-		// ScopedPointer<ClockDivideInterface> clockInterface;
-
-		ScopedPointer<UtilityButton> rescanButton, dacTTLButton;
-		ScopedPointer<UtilityButton> auxButton;
-		ScopedPointer<UtilityButton> adcButton;
-		ScopedPointer<UtilityButton> ledButton;
-
-		ScopedPointer<UtilityButton> dspoffsetButton;
-		ScopedPointer<ComboBox> ttlSettleCombo, dacHPFcombo;
-
-		ScopedPointer<Label> audioLabel, ttlSettleLabel, dacHPFlabel;
-
-		bool saveImpedances, measureWhenRecording;
-
 		DeviceThread *board;
 		ChannelsStreamsCanvas *canvas;
-
-		enum AudioChannel
-		{
-			LEFT = 0,
-			RIGHT = 1
-		};
-
-		// AudioChannel activeAudioChannel;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeviceEditor);
 	};
 
-	// class BandwidthInterface : public Component,
-	// 						   public Label::Listener
-	// {
-	// public:
-	// 	BandwidthInterface(DeviceThread *, DeviceEditor *);
-	// 	~BandwidthInterface();
-
-	// 	void paint(Graphics &g);
-	// 	void labelTextChanged(Label *te);
-
-	// 	void setLowerBandwidth(double value);
-	// 	void setUpperBandwidth(double value);
-	// 	double getLowerBandwidth();
-	// 	double getUpperBandwidth();
-
-	// private:
-	// 	String name;
-
-	// 	String lastLowCutString, lastHighCutString;
-
-	// 	DeviceThread *board;
-	// 	DeviceEditor *editor;
-
-	// 	ScopedPointer<Label> upperBandwidthSelection;
-	// 	ScopedPointer<Label> lowerBandwidthSelection;
-
-	// 	double actualUpperBandwidth;
-	// 	double actualLowerBandwidth;
-	// };
-
-	// class SampleRateInterface : public Component,
-	// 							public ComboBox::Listener
-	// {
-	// public:
-	// 	SampleRateInterface(DeviceThread *, DeviceEditor *);
-	// 	~SampleRateInterface();
-
-	// 	int getSelectedId();
-	// 	void setSelectedId(int);
-
-	// 	String getText();
-
-	// 	void paint(Graphics &g);
-	// 	void comboBoxChanged(ComboBox *cb);
-
-	// private:
-	// 	int sampleRate;
-	// 	String name;
-
-	// 	DeviceThread *board;
-	// 	DeviceEditor *editor;
-
-	// 	ScopedPointer<ComboBox> rateSelection;
-	// 	StringArray sampleRateOptions;
-	// };
-
-	// class AudioInterface : public Component,
-	// 					   public Label::Listener
-	// {
-	// public:
-	// 	AudioInterface(DeviceThread *, DeviceEditor *);
-	// 	~AudioInterface();
-
-	// 	void paint(Graphics &g);
-	// 	void labelTextChanged(Label *te);
-
-	// 	void setNoiseSlicerLevel(int value);
-	// 	int getNoiseSlicerLevel();
-
-	// private:
-	// 	String name;
-
-	// 	String lastNoiseSlicerString;
-	// 	String lastGainString;
-
-	// 	DeviceThread *board;
-	// 	DeviceEditor *editor;
-
-	// 	ScopedPointer<Label> noiseSlicerLevelSelection;
-
-	// 	int actualNoiseSlicerLevel;
-	// };
-
-	// class ClockDivideInterface : public Component,
-	// 							 public Label::Listener
-	// {
-	// public:
-	// 	ClockDivideInterface(DeviceThread *, DeviceEditor *);
-
-	// 	void paint(Graphics &g);
-	// 	void labelTextChanged(Label *te);
-
-	// 	void setClockDivideRatio(int value);
-	// 	int getClockDivideRatio() const { return actualDivideRatio; };
-
-	// private:
-	// 	String name;
-	// 	String lastDivideRatioString;
-
-	// 	DeviceThread *board;
-	// 	DeviceEditor *editor;
-
-	// 	ScopedPointer<Label> divideRatioSelection;
-	// 	int actualDivideRatio;
-	// };
-
 }
-#endif // __DEVICEEDITOR_H_2AD3C591__

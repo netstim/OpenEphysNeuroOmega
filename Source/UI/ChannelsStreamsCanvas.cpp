@@ -68,18 +68,17 @@ void ChannelsStreamsCanvas::refreshState()
 
 void ChannelsStreamsCanvas::update()
 {
-
-    // channelList->update(); // TODO
+    // TODO
 }
 
 void ChannelsStreamsCanvas::beginAnimation()
 {
-    // channelList->disableAll();
+    // TODO
 }
 
 void ChannelsStreamsCanvas::endAnimation()
 {
-    // channelList->enableAll();
+    // TODO
 }
 
 void ChannelsStreamsCanvas::resized()

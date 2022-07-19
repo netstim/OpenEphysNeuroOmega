@@ -86,8 +86,6 @@ namespace AONode
 
 		static DataThread *createDataThread(SourceNode *sn);
 
-		// XmlElement *getChannelsInformation() { return channelsXmlList; };
-
 		XmlElement *channelsXmlList = nullptr;
 		XmlElement *streamsXmlList = nullptr;
 
