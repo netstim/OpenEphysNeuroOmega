@@ -30,6 +30,7 @@
 
 #include <ctime>
 #include <math.h>
+#include <stdlib.h>
 
 // AlphaOmega SDK
 namespace AO
@@ -356,5 +357,12 @@ bool DeviceThread::updateBuffer()
                                       numberOfSamplesPerChannel,
                                       1);
     }
+
+    float dtt = ((float)rand()) / (float)RAND_MAX;
+    if (dtt < 0.1)
+    {
+        broadcastMessage("IGTL:Transform:DistanceToTarget:1:0:0:0:0:1:0:0:0:0:1:" + std::to_string(10 * dtt));
+    }
+
     return true;
 }
