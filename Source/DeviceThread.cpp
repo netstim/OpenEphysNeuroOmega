@@ -45,6 +45,8 @@ using namespace AONode;
 #define AO_BUFFER_SIZE_MS 5000
 #define SOURCE_BUFFER_SIZE 10000
 
+static const float DRIVE_ZERO_POSITION_MILIM = 25.0;
+
 DataThread *DeviceThread::createDataThread(SourceNode *sn)
 {
     return new DeviceThread(sn);
@@ -358,11 +360,27 @@ bool DeviceThread::updateBuffer()
                                       1);
     }
 
-    float dtt = ((float)rand()) / (float)RAND_MAX;
-    if (dtt < 0.1)
+    bool broadcast;
+    if (testing)
     {
-        broadcastMessage("IGTL:Transform:DistanceToTarget:1:0:0:0:0:1:0:0:0:0:1:" + std::to_string(10 * dtt));
+        dtt = 100 * ((float)rand()) / (float)RAND_MAX;
+        broadcast = (dtt < 0.1);
     }
+    else
+    {
+        AO::int32 nDepthUm = 0;
+        AO::EAOResult eAORes = (AO::EAOResult)AO::GetDriveDepth(&nDepthUm);
+        if (eAORes == AO::eAO_OK)
+        {
+            dtt = DRIVE_ZERO_POSITION_MILIM - nDepthUm / 1000.0;
+        }
+        broadcast = (eAORes == AO::eAO_OK) && (dtt != previous_dtt);
+    }
+    if (broadcast)
+    {
+        broadcastMessage("IGTL:Transform:DistanceToTarget:1:0:0:0:0:1:0:0:0:0:1:" + std::to_string(dtt));
+    }
+    previous_dtt = dtt;
 
     return true;
 }

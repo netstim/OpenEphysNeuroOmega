@@ -100,6 +100,10 @@ namespace AONode
 		int numberOfSamplesFromDevice;
 		AO::ULONG deviceTimeStamp;
 
+		// Neuro Omega distance to target
+		float dtt;
+		float previous_dtt;
+
 		// Source Buffer
 		float *sourceBufferData;
 		int numItems;
@@ -118,7 +122,7 @@ namespace AONode
 		void queryUserStartConnection();
 
 		/** Testing */
-		bool testing = true;
+		bool testing = false;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeviceThread);
 	};
