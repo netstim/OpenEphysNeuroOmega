@@ -378,7 +378,7 @@ bool DeviceThread::updateBuffer()
     }
     if (broadcast)
     {
-        broadcastMessage("IGTL:Transform:DistanceToTarget:1:0:0:0:0:1:0:0:0:0:1:" + std::to_string(dtt));
+        broadcastMessage("MicroDrive:DistanceToTarget:" + std::to_string(dtt));
     }
     previous_dtt = dtt;
 
