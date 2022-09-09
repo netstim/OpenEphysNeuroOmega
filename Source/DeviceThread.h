@@ -122,6 +122,8 @@ namespace AONode
 		void queryUserStartConnection();
 		void waitForConnection();
 
+		void setUpDefaultStream();
+
 		int updateStreamDataArrayFromAOAndGetNumberOfSamples(int streamID);
 		int updateStreamDataArrayFromTestDataAndGetNumberOfSamples(int streamID);
 		DataStream::Settings getStreamSettingsFromID(int streamID);

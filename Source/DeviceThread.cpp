@@ -97,9 +97,9 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
             stream = new XmlElement("STREAM");
             stream->setAttribute("ID", streamID);
             stream->setAttribute("Name", streamName);
-            stream->setAttribute("Sampling Rate", 1000); // 44000
-            stream->setAttribute("Bit Resolution", 1);   // 38.147
-            stream->setAttribute("Gain", 1);             // 20
+            stream->setAttribute("Sampling Rate", 1000);
+            stream->setAttribute("Bit Resolution", 1);
+            stream->setAttribute("Gain", 1);
             stream->setAttribute("Channel IDs", "");
             stream->setAttribute("Number Of Channels", "");
             stream->setAttribute("Enabled", false);
@@ -116,7 +116,22 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
     }
 
     numberOfStreams = streamsXmlList->getNumChildElements();
+    setUpDefaultStream();
+}
 
+void DeviceThread::setUpDefaultStream()
+{
+    for (int streamID = 0; streamID < numberOfStreams; streamID++)
+    {
+        if (streamsXmlList->getChildElement(streamID)->getStringAttribute("Name").equalsIgnoreCase("CRAW"))
+        {
+            streamsXmlList->getChildElement(streamID)->setAttribute("Sampling Rate", 44000);
+            streamsXmlList->getChildElement(streamID)->setAttribute("Bit Resolution", 38.147);
+            streamsXmlList->getChildElement(streamID)->setAttribute("Gain", 20);
+            streamsXmlList->getChildElement(streamID)->setAttribute("Enabled", true);
+            return;
+        }
+    }
     streamsXmlList->getChildElement(0)->setAttribute("Enabled", true);
 }
 
