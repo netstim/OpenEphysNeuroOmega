@@ -52,14 +52,12 @@ void DeviceEditor::updateSettings()
 
 void DeviceEditor::startAcquisition()
 {
-    // TODO: enable/disable components
-    acquisitionIsActive = true;
+    canvas->streamsTable->setEnabled(false);
 }
 
 void DeviceEditor::stopAcquisition()
 {
-    // TODO: enable/disable components
-    acquisitionIsActive = false;
+    canvas->streamsTable->setEnabled(true);
 }
 
 Visualizer *DeviceEditor::createNewCanvas()
