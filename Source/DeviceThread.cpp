@@ -136,8 +136,11 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
             }
         }
         streamsXmlList->getChildElement(i)->setAttribute("Number Of Channels", numberOfChannelsInStream);
+        streamsXmlList->getChildElement(i)->setAttribute("Enabled", false);
         sourceBuffers.add(new DataBuffer(numberOfChannelsInStream, SOURCE_BUFFER_SIZE));
     }
+
+    streamsXmlList->getChildElement(0)->setAttribute("Enabled", true);
 }
 
 DeviceThread::~DeviceThread()
@@ -211,14 +214,17 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
     devices->clear();
     configurationObjects->clear();
 
-    int streamID = -1;
+    int streamID, thisChannelStreamID = -1;
     DataStream *stream;
 
     for (int ch = 0; ch < numberOfChannels; ch++)
     {
-        if (streamID != channelsXmlList->getChildElement(ch)->getIntAttribute("Stream ID"))
+        thisChannelStreamID = channelsXmlList->getChildElement(ch)->getIntAttribute("Stream ID");
+        if (!streamsXmlList->getChildElement(thisChannelStreamID)->getBoolAttribute("Enabled"))
+            continue;
+        if (streamID != thisChannelStreamID)
         {
-            streamID = channelsXmlList->getChildElement(ch)->getIntAttribute("Stream ID");
+            streamID = thisChannelStreamID;
             DataStream::Settings dataStreamSettings{
                 streamsXmlList->getChildElement(streamID)->getStringAttribute("Name"),
                 "description",
@@ -227,9 +233,11 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
             stream = new DataStream(dataStreamSettings);
             sourceStreams->add(stream);
         }
+        String channelName = channelsXmlList->getChildElement(ch)->getStringAttribute("Name");
+        std::cout << "Adding channel: " << channelName << std::endl; // not sure why removing this makes the gui crash
         ContinuousChannel::Settings channelSettings{
             ContinuousChannel::ELECTRODE,
-            channelsXmlList->getChildElement(ch)->getStringAttribute("Name"),
+            channelName,
             "description",
             "identifier",
             streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain"),
@@ -296,9 +304,13 @@ bool DeviceThread::updateBuffer()
     }
 
     int numberOfSamplesPerChannel;
+    int sourceBufferIdx = 0;
 
     for (int i = 0; i < numberOfStreams; i++)
     {
+        if (!streamsXmlList->getChildElement(i)->getBoolAttribute("Enabled"))
+            continue;
+
         int numberOfChannelsInStream = streamsXmlList->getChildElement(i)->getIntAttribute("Number Of Channels");
 
         if (testing)
@@ -352,12 +364,12 @@ bool DeviceThread::updateBuffer()
             }
         }
 
-        sourceBuffers[i]->addToBuffer(sourceBufferData,
-                                      totalSamplesSinceStart,
-                                      timeStamps,
-                                      eventCodes,
-                                      numberOfSamplesPerChannel,
-                                      1);
+        sourceBuffers[sourceBufferIdx++]->addToBuffer(sourceBufferData,
+                                                      totalSamplesSinceStart,
+                                                      timeStamps,
+                                                      eventCodes,
+                                                      numberOfSamplesPerChannel,
+                                                      1);
     }
 
     bool broadcast;

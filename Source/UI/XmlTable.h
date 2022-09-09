@@ -103,6 +103,16 @@ namespace AONode
                 textLabel->setRowAndColumn(rowNumber, columnId);
                 return textLabel;
             }
+            else if (columnName == "Enabled")
+            {
+                auto *selectionBox = static_cast<SelectionColumnCustomComponent *>(existingComponentToUpdate);
+
+                if (selectionBox == nullptr)
+                    selectionBox = new SelectionColumnCustomComponent(*this);
+
+                selectionBox->setRowAndColumn(rowNumber, columnId);
+                return selectionBox;
+            }
 
             jassert(existingComponentToUpdate == nullptr);
             return nullptr;
@@ -122,17 +132,40 @@ namespace AONode
                 }
             }
 
+            widest = jmax(widest, font.getStringWidth(getAttributeNameForColumnId(columnId)));
+
             return widest + 8;
         }
 
-        int getSelection(const int rowNumber) const
+        bool getSelection(const int rowNumber) const
         {
-            return dataList->getChildElement(rowNumber)->getIntAttribute("Select");
+            return dataList->getChildElement(rowNumber)->getBoolAttribute("Enabled");
         }
 
-        void setSelection(const int rowNumber, const int newSelection)
+        void setSelection(const int rowNumber, const bool newSelection, juce::ToggleButton *toggleButton)
         {
-            dataList->getChildElement(rowNumber)->setAttribute("Select", newSelection);
+            dataList->getChildElement(rowNumber)->setAttribute("Enabled", newSelection);
+            if (atLeastOneStreamEnabled())
+                xmlModifiedBroadcaster.sendActionMessage("Xml Modified");
+            else
+            {
+                dataList->getChildElement(rowNumber)->setAttribute("Enabled", true);
+                toggleButton->setToggleState(true, juce::dontSendNotification);
+                AlertWindow::showMessageBox(AlertWindow::NoIcon, "Neuro Omega", "At least one stream must be enabled", "OK", nullptr);
+            }
+        }
+
+        bool atLeastOneStreamEnabled()
+        {
+            for (auto i = getNumRows(); --i >= 0;)
+            {
+                if (auto *rowElement = dataList->getChildElement(i))
+                {
+                    if (rowElement->getBoolAttribute("Enabled"))
+                        return true;
+                }
+            }
+            return false;
         }
 
         String getText(const int columnNumber, const int rowNumber) const
@@ -198,6 +231,36 @@ namespace AONode
             Colour textColour;
         };
 
+        class SelectionColumnCustomComponent : public Component
+        {
+        public:
+            SelectionColumnCustomComponent(TableComponent &td)
+                : owner(td)
+            {
+                addAndMakeVisible(toggleButton);
+
+                toggleButton.onClick = [this]
+                { owner.setSelection(row, (bool)toggleButton.getToggleState(), &toggleButton); };
+            }
+
+            void resized() override
+            {
+                toggleButton.setBoundsInset(juce::BorderSize<int>(2));
+            }
+
+            void setRowAndColumn(int newRow, int newColumn)
+            {
+                row = newRow;
+                columnId = newColumn;
+                toggleButton.setToggleState((bool)owner.getSelection(row), juce::dontSendNotification);
+            }
+
+        private:
+            TableComponent &owner;
+            juce::ToggleButton toggleButton;
+            int row, columnId;
+        };
+
         //==============================================================================
         class DataSorter
         {
@@ -248,7 +311,6 @@ namespace AONode
                 if (columnXml->getIntAttribute("columnId") == columnId)
                     return columnXml->getStringAttribute("name");
             }
-
             return {};
         }
 
