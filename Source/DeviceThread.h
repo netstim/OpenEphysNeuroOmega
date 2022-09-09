@@ -91,14 +91,14 @@ namespace AONode
 
 	private:
 		// Channels info
-		int numberOfChannels;
+		AO::uint32 numberOfChannels;
 		int numberOfStreams;
 
 		// Neuro Omega Buffer
-		AO::int16 *deviceDataArray;
+		AO::int16 *streamDataArray;
 		int deviceDataArraySize;
-		int numberOfSamplesFromDevice;
 		AO::ULONG deviceTimeStamp;
+		int numberOfChannelsInStream;
 
 		// Neuro Omega distance to target
 		float dtt;
@@ -107,7 +107,7 @@ namespace AONode
 		// Source Buffer
 		float *sourceBufferData;
 		int numItems;
-		int64 *totalSamplesSinceStart;
+		int64 *sampleCount;
 		double *timeStamps;
 		uint64 *eventCodes;
 		int chunkSize;
@@ -120,9 +120,20 @@ namespace AONode
 
 		/** Open the connection to the neuro omega*/
 		void queryUserStartConnection();
+		void waitForConnection();
+
+		int updateStreamDataArrayFromAOAndGetNumberOfSamples(int streamID);
+		int updateStreamDataArrayFromTestDataAndGetNumberOfSamples(int streamID);
+		DataStream::Settings getStreamSettingsFromID(int streamID);
+		int *getChannelIDsArrayFromStreamID(int streamID);
+		void updateSampleCountAndTimeStampsAndEventCodes(int streamID, int numberOfSamplesPerChannel);
+		void resetStreamsTotalSamplesSinceStart();
+		void clearSourceBuffers();
+		void queryDistanceToTarget();
 
 		/** Testing */
 		bool testing = true;
+		int sleepTimeMiliS;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeviceThread);
 	};
