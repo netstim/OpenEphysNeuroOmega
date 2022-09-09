@@ -35,6 +35,8 @@ DeviceEditor::DeviceEditor(GenericProcessor *parentNode,
                            DeviceThread *board_)
     : VisualizerEditor(parentNode, "tabText", 340), board(board_)
 {
+    desiredWidth = 150;
+
     canvas = nullptr;
 
     tabText = "Neuro Omega";
