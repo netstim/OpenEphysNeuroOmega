@@ -111,6 +111,7 @@ namespace AONode
 		double *timeStamps;
 		uint64 *eventCodes;
 		int chunkSize;
+		Array<int64> sourceBuffersSampleCount;
 
 		/** True if sourceBufferData is streaming*/
 		bool isTransmitting;

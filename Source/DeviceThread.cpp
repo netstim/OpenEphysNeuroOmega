@@ -211,6 +211,7 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
     devices->clear();
     configurationObjects->clear();
     sourceBuffers.clear();
+    sourceBuffersSampleCount.clear();
 
     int streamID, thisChannelStreamID = -1;
     DataStream *stream;
@@ -227,15 +228,17 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
             stream = new DataStream(dataStreamSettings);
             sourceStreams->add(stream);
             sourceBuffers.add(new DataBuffer(streamsXmlList->getChildElement(streamID)->getIntAttribute("Number Of Channels"), SOURCE_BUFFER_SIZE));
+            sourceBuffersSampleCount.add(0);
         }
         String channelName = channelsXmlList->getChildElement(ch)->getStringAttribute("Name");
+        float bitVolts = streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain");
         std::cout << "Adding channel: " << channelName << std::endl; // not sure why removing this makes the gui crash
         ContinuousChannel::Settings channelSettings{
             ContinuousChannel::ELECTRODE,
             channelName,
             "description",
             "identifier",
-            streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain"),
+            bitVolts,
             stream};
         continuousChannels->add(new ContinuousChannel(channelSettings));
         continuousChannels->getLast()->setUnits("uV");
@@ -267,8 +270,6 @@ bool DeviceThread::startAcquisition()
         AO::AddBufferChannel(channelsXmlList->getChildElement(i)->getIntAttribute("ID"), AO_BUFFER_SIZE_MS);
     AO::ClearBuffers();
 
-    resetStreamsTotalSamplesSinceStart();
-
     startThread();
 
     isTransmitting = true;
@@ -285,8 +286,6 @@ bool DeviceThread::stopAcquisition()
 
     clearSourceBuffers();
 
-    resetStreamsTotalSamplesSinceStart();
-
     isTransmitting = false;
 
     return true;
@@ -298,14 +297,12 @@ void DeviceThread::clearSourceBuffers()
     for (int i = 0; i < numberOfStreams; i++)
     {
         if (streamsXmlList->getChildElement(i)->getBoolAttribute("Enabled"))
-            sourceBuffers[sourceBufferIdx++]->clear();
+        {
+            sourceBuffersSampleCount.set(sourceBufferIdx, 0);
+            sourceBuffers[sourceBufferIdx]->clear();
+            sourceBufferIdx++;
+        }
     }
-}
-
-void DeviceThread::resetStreamsTotalSamplesSinceStart()
-{
-    for (int i = 0; i < numberOfStreams; i++)
-        streamsXmlList->getChildElement(i)->setAttribute("sampleCount", 0);
 }
 
 bool DeviceThread::updateBuffer()
@@ -320,6 +317,8 @@ bool DeviceThread::updateBuffer()
     int numberOfSamplesPerChannel;
     int numberOfSamplesFromDevice;
     int sourceBufferIdx = 0;
+    int sourceBufferDataIdx;
+    float bitVolts;
 
     for (int streamID = 0; streamID < numberOfStreams; streamID++)
     {
@@ -327,6 +326,7 @@ bool DeviceThread::updateBuffer()
             continue;
 
         numberOfChannelsInStream = streamsXmlList->getChildElement(streamID)->getIntAttribute("Number Of Channels");
+        bitVolts = streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain");
 
         if (testing)
             numberOfSamplesFromDevice = updateStreamDataArrayFromTestDataAndGetNumberOfSamples(streamID);
@@ -335,24 +335,31 @@ bool DeviceThread::updateBuffer()
 
         numberOfSamplesPerChannel = numberOfSamplesFromDevice / numberOfChannelsInStream;
 
-        updateSampleCountAndTimeStampsAndEventCodes(streamID, numberOfSamplesPerChannel);
-
         sourceBufferData = new float[numberOfSamplesFromDevice];
-        int j = 0;
+        sampleCount = new int64[numberOfSamplesPerChannel];
+        timeStamps = new double[numberOfSamplesPerChannel];
+        eventCodes = new uint64[numberOfSamplesPerChannel];
+
+        sourceBufferDataIdx = 0;
         for (int samp = 0; samp < numberOfSamplesPerChannel; samp++)
         {
+            sampleCount[samp] = sourceBuffersSampleCount[sourceBufferIdx] + samp;
+            timeStamps[samp] = float(deviceTimeStamp) + samp / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling Rate");
+            eventCodes[samp] = 1;
             for (int chan = 0; chan < numberOfChannelsInStream; chan++)
             {
-                sourceBufferData[j++] = streamDataArray[(chan * numberOfSamplesPerChannel) + samp] * streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain");
+                sourceBufferData[sourceBufferDataIdx++] = streamDataArray[(chan * numberOfSamplesPerChannel) + samp] * bitVolts;
             }
         }
 
-        sourceBuffers[sourceBufferIdx++]->addToBuffer(sourceBufferData,
-                                                      sampleCount,
-                                                      timeStamps,
-                                                      eventCodes,
-                                                      numberOfSamplesPerChannel,
-                                                      1);
+        sourceBuffersSampleCount.set(sourceBufferIdx, sampleCount[numberOfSamplesPerChannel - 1] + 1);
+        sourceBuffers[sourceBufferIdx]->addToBuffer(sourceBufferData,
+                                                    sampleCount,
+                                                    timeStamps,
+                                                    eventCodes,
+                                                    numberOfSamplesPerChannel,
+                                                    1);
+        sourceBufferIdx++;
     }
 
     queryDistanceToTarget();
@@ -373,32 +380,14 @@ void DeviceThread::queryDistanceToTarget()
         AO::int32 nDepthUm = 0;
         AO::EAOResult eAORes = (AO::EAOResult)AO::GetDriveDepth(&nDepthUm);
         if (eAORes == AO::eAO_OK)
-        {
             dtt = DRIVE_ZERO_POSITION_MILIM - nDepthUm / 1000.0;
-        }
         broadcast = (eAORes == AO::eAO_OK) && (dtt != previous_dtt);
     }
+
     if (broadcast)
-    {
         broadcastMessage("MicroDrive:DistanceToTarget:" + std::to_string(dtt));
-    }
+
     previous_dtt = dtt;
-}
-
-void DeviceThread::updateSampleCountAndTimeStampsAndEventCodes(int streamID, int numberOfSamplesPerChannel)
-{
-    sampleCount = new int64[numberOfSamplesPerChannel];
-    timeStamps = new double[numberOfSamplesPerChannel];
-    eventCodes = new uint64[numberOfSamplesPerChannel];
-
-    for (int s = 0; s < numberOfSamplesPerChannel; s++)
-    {
-        sampleCount[s] = streamsXmlList->getChildElement(streamID)->getIntAttribute("sampleCount") + s;
-        timeStamps[s] = float(deviceTimeStamp) + s / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling Rate");
-        eventCodes[s] = 1;
-    }
-
-    streamsXmlList->getChildElement(streamID)->setAttribute("sampleCount", String(sampleCount[numberOfSamplesPerChannel - 1] + 1));
 }
 
 int DeviceThread::updateStreamDataArrayFromAOAndGetNumberOfSamples(int streamID)
