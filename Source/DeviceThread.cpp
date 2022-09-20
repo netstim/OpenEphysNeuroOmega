@@ -59,12 +59,14 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
 
     queryUserStartConnection();
 
-    AO::GetChannelsCount(&numberOfChannels);
-    if (testing)
-        numberOfChannels = 5;
+    AO::uint32 AONumberOfChannels;
 
-    AO::SInformation *pChannelsInfo = new AO::SInformation[numberOfChannels];
-    AO::GetAllChannels(pChannelsInfo, numberOfChannels);
+    AO::GetChannelsCount(&AONumberOfChannels);
+    if (testing)
+        AONumberOfChannels = 5;
+
+    AO::SInformation *pChannelsInfo = new AO::SInformation[AONumberOfChannels];
+    AO::GetAllChannels(pChannelsInfo, AONumberOfChannels);
     if (testing)
     {
         pChannelsInfo[0].channelID = 0;
@@ -72,10 +74,10 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
         pChannelsInfo[2].channelID = 2;
         pChannelsInfo[3].channelID = 3;
         pChannelsInfo[4].channelID = 4;
-        strcpy(pChannelsInfo[0].channelName, "RAW Name1");
-        strcpy(pChannelsInfo[1].channelName, "RAW Name2");
-        strcpy(pChannelsInfo[2].channelName, "SPK Name1");
-        strcpy(pChannelsInfo[3].channelName, "SPK Name2");
+        strcpy(pChannelsInfo[0].channelName, "RAW / Name1");
+        strcpy(pChannelsInfo[1].channelName, "RAW / Name2");
+        strcpy(pChannelsInfo[2].channelName, "SPK / Name1");
+        strcpy(pChannelsInfo[3].channelName, "SPK / Name2");
         strcpy(pChannelsInfo[4].channelName, "SPK Name3");
     }
 
@@ -86,9 +88,15 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
     String streamName;
     StringArray channelsIDs;
     int streamID = -1;
+    numberOfChannels = AONumberOfChannels;
 
-    for (int ch = 0; ch < numberOfChannels; ch++)
+    for (int ch = 0; ch < AONumberOfChannels; ch++)
     {
+        if (!String(pChannelsInfo[ch].channelName).containsChar('/'))
+        {
+            numberOfChannels--;
+            continue;
+        }
         streamName = String(pChannelsInfo[ch].channelName).upToFirstOccurrenceOf(" ", false, false);
         if (streamID < 0 || (!streamName.equalsIgnoreCase(streamsXmlList->getChildElement(streamID)->getStringAttribute("Name"))))
         {
@@ -123,7 +131,7 @@ void DeviceThread::setUpDefaultStream()
 {
     for (int streamID = 0; streamID < numberOfStreams; streamID++)
     {
-        if (streamsXmlList->getChildElement(streamID)->getStringAttribute("Name").equalsIgnoreCase("CRAW"))
+        if (streamsXmlList->getChildElement(streamID)->getStringAttribute("Name").equalsIgnoreCase("RAW"))
         {
             streamsXmlList->getChildElement(streamID)->setAttribute("Sampling Rate", 44000);
             streamsXmlList->getChildElement(streamID)->setAttribute("Bit Resolution", 38.147);
