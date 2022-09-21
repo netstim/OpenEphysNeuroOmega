@@ -173,27 +173,36 @@ void DeviceThread::handleBroadcastMessage(String msg)
 
 void DeviceThread::queryUserStartConnection()
 {
-    auto *aw = new AlertWindow(TRANS("Neuro Omega: start connection"),
-                               TRANS("Enter the system MAC adress"),
-                               AlertWindow::NoIcon, nullptr);
+    auto *connectAW = new AlertWindow(TRANS("Neuro Omega: start connection"),
+                                      TRANS("Enter the system MAC adress"),
+                                      AlertWindow::NoIcon, nullptr);
 
-    aw->addTextEditor("System MAC", String("AA:BB:CC:DD:EE:FF"), String(), false);
-    aw->addButton(TRANS("Connect"), 1, KeyPress(KeyPress::returnKey));
-    aw->addButton(TRANS("Cancel"), 0, KeyPress(KeyPress::escapeKey));
+    connectAW->addTextEditor("System MAC", String("AA:BB:CC:DD:EE:FF"), String(), false);
+    connectAW->addButton(TRANS("Connect"), 1, KeyPress(KeyPress::returnKey));
+    connectAW->addButton(TRANS("Cancel"), 0, KeyPress(KeyPress::escapeKey));
 
-    if (aw->runModalLoop())
+    if (connectAW->runModalLoop())
     {
         AO::MAC_ADDR sysMAC = {0};
-        sscanf(aw->getTextEditorContents("System MAC").toStdString().c_str(), "%x:%x:%x:%x:%x:%x",
+        sscanf(connectAW->getTextEditorContents("System MAC").toStdString().c_str(), "%x:%x:%x:%x:%x:%x",
                &sysMAC.addr[0], &sysMAC.addr[1], &sysMAC.addr[2], &sysMAC.addr[3], &sysMAC.addr[4], &sysMAC.addr[5]);
         AO::DefaultStartConnection(&sysMAC, 0);
         waitForConnection();
     }
+    connectAW->setVisible(false);
 
-    aw->setVisible(false);
-    AlertWindow::showMessageBox(AlertWindow::NoIcon, "Neuro Omega",
-                                ((foundInputSource()) ? "Connected!" : ("Unable to connect\n" + getAOSDKError())),
-                                "OK", nullptr);
+    auto *retryAW = new AlertWindow(TRANS("Neuro Omega"),
+                                    TRANS((foundInputSource()) ? "Connected!" : ("Unable to connect\n" + getAOSDKError())),
+                                    AlertWindow::NoIcon, nullptr);
+
+    if (!foundInputSource())
+        retryAW->addButton(TRANS("Retry"), 1, KeyPress(KeyPress::returnKey));
+    retryAW->addButton(TRANS("OK"), 0, KeyPress(KeyPress::escapeKey));
+
+    bool retry = retryAW->runModalLoop();
+    retryAW->setVisible(false);
+    if (retry)
+        queryUserStartConnection();
 }
 
 String DeviceThread::getAOSDKError()
