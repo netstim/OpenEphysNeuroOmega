@@ -77,11 +77,11 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
         pChannelsInfo[2].channelID = 2;
         pChannelsInfo[3].channelID = 3;
         pChannelsInfo[4].channelID = 4;
-        strcpy(pChannelsInfo[0].channelName, "RAW / Name1");
-        strcpy(pChannelsInfo[1].channelName, "RAW / Name2");
-        strcpy(pChannelsInfo[2].channelName, "SPK / Name1");
-        strcpy(pChannelsInfo[3].channelName, "SPK / Name2");
-        strcpy(pChannelsInfo[4].channelName, "SPK Name3");
+        strcpy(pChannelsInfo[0].channelName, "TRAW / Name1");
+        strcpy(pChannelsInfo[1].channelName, "TRAW / Name2");
+        strcpy(pChannelsInfo[2].channelName, "TSPK / Name1");
+        strcpy(pChannelsInfo[3].channelName, "TSPK / Name2");
+        strcpy(pChannelsInfo[4].channelName, "TSPK Name3");
     }
 
     channelsXmlList = new XmlElement("CHANNELS");
@@ -244,7 +244,7 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
     sourceBuffers.clear();
     sourceBuffersSampleCount.clear();
 
-    int streamID, thisChannelStreamID = -1;
+    int streamID = -1, thisChannelStreamID = -1;
     DataStream *stream;
 
     for (int ch = 0; ch < numberOfChannels; ch++)
@@ -268,12 +268,25 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
             ContinuousChannel::ELECTRODE,
             channelName,
             "description",
-            "identifier",
+            "neuro-omega-device.continuous.headstage",
             bitVolts,
             stream};
         continuousChannels->add(new ContinuousChannel(channelSettings));
         continuousChannels->getLast()->setUnits("uV");
     }
+
+    // Add an event channel.
+    // This is not used currently but RecordNode.cpp (line 447) calls eventChannels.getLast() and app crashes
+    // TODO: Fix and send PR
+    EventChannel::Settings settings{
+        EventChannel::Type::TTL,
+        "Neuro Omega TTL Input",
+        "Events on digital input lines of a Neuro Omega device",
+        "neuro-omega-device.events",
+        stream,
+        8};
+
+    eventChannels->add(new EventChannel(settings));
 }
 
 DataStream::Settings DeviceThread::getStreamSettingsFromID(int streamID)
@@ -281,7 +294,7 @@ DataStream::Settings DeviceThread::getStreamSettingsFromID(int streamID)
     DataStream::Settings dataStreamSettings{
         streamsXmlList->getChildElement(streamID)->getStringAttribute("Name"),
         "description",
-        "identifier",
+        "neuro-omega-device.data",
         streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling Rate")};
     return dataStreamSettings;
 }
