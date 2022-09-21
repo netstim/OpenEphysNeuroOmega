@@ -121,7 +121,7 @@ namespace AONode
 
 		/** Open the connection to the neuro omega*/
 		void queryUserStartConnection();
-		String getAOSDKError();
+		String getLastAOSDKError();
 		void waitForConnection();
 
 		void setUpDefaultStream();

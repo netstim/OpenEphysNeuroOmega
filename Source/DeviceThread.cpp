@@ -192,7 +192,7 @@ void DeviceThread::queryUserStartConnection()
     connectAW->setVisible(false);
 
     auto *retryAW = new AlertWindow(TRANS("Neuro Omega"),
-                                    TRANS((foundInputSource()) ? "Connected!" : ("Unable to connect\n" + getAOSDKError())),
+                                    TRANS((foundInputSource()) ? "Connected!" : ("Unable to connect\n" + getLastAOSDKError())),
                                     AlertWindow::NoIcon, nullptr);
 
     if (!foundInputSource())
@@ -205,7 +205,7 @@ void DeviceThread::queryUserStartConnection()
         queryUserStartConnection();
 }
 
-String DeviceThread::getAOSDKError()
+String DeviceThread::getLastAOSDKError()
 {
     char sError[1000] = {0};
     int nErrorCount = 0;
