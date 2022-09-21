@@ -183,11 +183,13 @@ void DeviceThread::queryUserStartConnection()
 
     if (connectAW->runModalLoop())
     {
+        MouseCursor::showWaitCursor();
         AO::MAC_ADDR sysMAC = {0};
         sscanf(connectAW->getTextEditorContents("System MAC").toStdString().c_str(), "%x:%x:%x:%x:%x:%x",
                &sysMAC.addr[0], &sysMAC.addr[1], &sysMAC.addr[2], &sysMAC.addr[3], &sysMAC.addr[4], &sysMAC.addr[5]);
         AO::DefaultStartConnection(&sysMAC, 0);
         waitForConnection();
+        MouseCursor::hideWaitCursor();
     }
     connectAW->setVisible(false);
 
