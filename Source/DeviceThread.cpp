@@ -192,8 +192,16 @@ void DeviceThread::queryUserStartConnection()
 
     aw->setVisible(false);
     AlertWindow::showMessageBox(AlertWindow::NoIcon, "Neuro Omega",
-                                ((foundInputSource()) ? "Connected!" : "Unable to connect"),
+                                ((foundInputSource()) ? "Connected!" : ("Unable to connect\n" + getAOSDKError())),
                                 "OK", nullptr);
+}
+
+String DeviceThread::getAOSDKError()
+{
+    char sError[1000] = {0};
+    int nErrorCount = 0;
+    AO::ErrorHandlingfunc(&nErrorCount, sError, 1000);
+    return String(sError);
 }
 
 void DeviceThread::waitForConnection()
