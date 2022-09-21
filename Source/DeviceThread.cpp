@@ -59,8 +59,11 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
 
     queryUserStartConnection();
 
-    AO::uint32 AONumberOfChannels;
+    // start with 2 channels and automatically resize
+    // removing this will make the gui crash
+    sourceBuffers.add(new DataBuffer(2, SOURCE_BUFFER_SIZE));
 
+    AO::uint32 AONumberOfChannels = 0;
     AO::GetChannelsCount(&AONumberOfChannels);
     if (testing)
         AONumberOfChannels = 5;
@@ -140,7 +143,8 @@ void DeviceThread::setUpDefaultStream()
             return;
         }
     }
-    streamsXmlList->getChildElement(0)->setAttribute("Enabled", true);
+    if (numberOfStreams > 0)
+        streamsXmlList->getChildElement(0)->setAttribute("Enabled", true);
 }
 
 DeviceThread::~DeviceThread()
@@ -198,7 +202,7 @@ void DeviceThread::waitForConnection()
     {
         Thread::sleep(1000);
         if (foundInputSource())
-            break;
+            return;
     }
 }
 

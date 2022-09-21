@@ -66,10 +66,11 @@ Visualizer *DeviceEditor::createNewCanvas()
 {
     GenericProcessor *processor = (GenericProcessor *)getProcessor();
 
-    canvas = new ChannelsStreamsCanvas(board, this);
-
-    canvas->streamsTable->addXmlModifiedListener(this);
-
+    if (processor->getTotalContinuousChannels() > 0)
+    {
+        canvas = new ChannelsStreamsCanvas(board, this);
+        canvas->streamsTable->addXmlModifiedListener(this);
+    }
     return canvas;
 }
 
