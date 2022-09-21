@@ -54,12 +54,14 @@ void DeviceEditor::updateSettings()
 
 void DeviceEditor::startAcquisition()
 {
-    canvas->streamsTable->setEnabled(false);
+    if (canvas != nullptr)
+        canvas->streamsTable->setEnabled(false);
 }
 
 void DeviceEditor::stopAcquisition()
 {
-    canvas->streamsTable->setEnabled(true);
+    if (canvas != nullptr)
+        canvas->streamsTable->setEnabled(true);
 }
 
 Visualizer *DeviceEditor::createNewCanvas()
