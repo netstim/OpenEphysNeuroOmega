@@ -135,7 +135,7 @@ namespace AONode
 		void queryDistanceToTarget();
 
 		/** Testing */
-		bool testing = true;
+		bool testing = false;
 		int sleepTimeMiliS;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeviceThread);
