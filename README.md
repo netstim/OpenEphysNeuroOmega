@@ -6,10 +6,24 @@ This repository contains a plugin for the [Open Ephys GUI](https://github.com/op
 
 ## Installation
 
-The Neuro Omega (proprietary) SDK should already be installed in the computer.
+The Neuro Omega (proprietary) SDK should already be installed in the computer and the `NeuroOmega_x64.dll` should be copied to the shared folder: `C:\ProgramData\Open Ephys\shared-api8`.
 
-The plugin is currently not available in the GUI Plugin installer. The compiled dll for GUI v6 is available from the Releases page. It should be placed under `C:\ProgramData\Open Ephys\plugins-api8`. Also, the `NeuroOmega_x64.dll` from the SDK should be copied to the shared folder: `C:\ProgramData\Open Ephys\shared-api8`.
+- Manual
 
-Alternativly, one can also compile from source. See Open Ephys GUI Documentation for instructions.
-To build the plugin, the Neuro Omega SDK should already be installed in the computer.
+The compiled dll for GUI v6 is available from the Releases page. It should be downloaded and placed under `C:\ProgramData\Open Ephys\plugins-api8`.
 
+- Github CLI
+
+Using Github CLI is easy to stay up to date with latest release using the following command:
+
+```PowerShell
+gh release download --clobber --dir "C:\ProgramData\Open Ephys\plugins-api8" --pattern *.dll --repo netstim/OpenEphysNeuroOmega
+```
+
+- From Source
+
+Alternativly, one can also compile this plugin from source. See Open Ephys GUI Documentation for instructions.
+
+- From the GUI
+
+The plugin is currently not available from the GUI Plugin installer. Use one of the avobe methods.
