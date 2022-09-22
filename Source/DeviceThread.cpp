@@ -66,41 +66,53 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
     AO::uint32 AONumberOfChannels = 0;
     AO::GetChannelsCount(&AONumberOfChannels);
     if (testing)
-        AONumberOfChannels = 5;
+        AONumberOfChannels = 10;
 
     AO::SInformation *pChannelsInfo = new AO::SInformation[AONumberOfChannels];
     AO::GetAllChannels(pChannelsInfo, AONumberOfChannels);
     if (testing)
     {
-        pChannelsInfo[0].channelID = 0;
-        pChannelsInfo[1].channelID = 1;
-        pChannelsInfo[2].channelID = 2;
-        pChannelsInfo[3].channelID = 3;
-        pChannelsInfo[4].channelID = 4;
-        strcpy(pChannelsInfo[0].channelName, "TRAW / Name1");
-        strcpy(pChannelsInfo[1].channelName, "TRAW / Name2");
-        strcpy(pChannelsInfo[2].channelName, "TSPK / Name1");
-        strcpy(pChannelsInfo[3].channelName, "TSPK / Name2");
-        strcpy(pChannelsInfo[4].channelName, "TSPK Name3");
+        pChannelsInfo[0].channelID = 10000;
+        pChannelsInfo[1].channelID = 10001;
+        pChannelsInfo[2].channelID = 10002;
+        pChannelsInfo[3].channelID = 10003;
+        pChannelsInfo[4].channelID = 10004;
+        pChannelsInfo[5].channelID = 10005;
+        pChannelsInfo[6].channelID = 10006;
+        pChannelsInfo[7].channelID = 10007;
+        pChannelsInfo[8].channelID = 10008;
+        pChannelsInfo[9].channelID = 10009;
+        strcpy(pChannelsInfo[0].channelName, "LFP 01 / Central");
+        strcpy(pChannelsInfo[1].channelName, "LFP 02 / Posteriolateral");
+        strcpy(pChannelsInfo[2].channelName, "LFP 03");
+        strcpy(pChannelsInfo[3].channelName, "LFP 04");
+        strcpy(pChannelsInfo[4].channelName, "LFP 05");
+        strcpy(pChannelsInfo[5].channelName, "Macro LFP 01 / Central");
+        strcpy(pChannelsInfo[6].channelName, "Macro LFP 02 / Posteriolateral");
+        strcpy(pChannelsInfo[7].channelName, "Macro LFP 03");
+        strcpy(pChannelsInfo[8].channelName, "Macro LFP 04");
+        strcpy(pChannelsInfo[9].channelName, "Macro LFP 05");
     }
 
     channelsXmlList = new XmlElement("CHANNELS");
     streamsXmlList = new XmlElement("STREAMS");
 
     XmlElement *channel, *stream;
-    String streamName;
+    String AOChannelName, channelName, streamName;
     StringArray channelsIDs;
     int streamID = -1;
     numberOfChannels = AONumberOfChannels;
 
     for (int ch = 0; ch < AONumberOfChannels; ch++)
     {
-        if (!String(pChannelsInfo[ch].channelName).containsChar('/'))
+        AOChannelName = String(pChannelsInfo[ch].channelName);
+        if (!AOChannelName.containsChar('/'))
         {
             numberOfChannels--;
             continue;
         }
-        streamName = String(pChannelsInfo[ch].channelName).upToFirstOccurrenceOf(" ", false, false);
+        streamName = AOChannelName.upToFirstOccurrenceOf("/", false, false).dropLastCharacters(4).replace(" ", "");
+        channelName = AOChannelName.fromFirstOccurrenceOf("/", false, false).replace(" ", "");
         if (streamID < 0 || (!streamName.equalsIgnoreCase(streamsXmlList->getChildElement(streamID)->getStringAttribute("Name"))))
         {
             channelsIDs.clear();
@@ -121,8 +133,9 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
         stream->setAttribute("Number Of Channels", channelsIDs.size());
         channel = new XmlElement("CHANNEL");
         channel->setAttribute("ID", pChannelsInfo[ch].channelID);
-        channel->setAttribute("Name", pChannelsInfo[ch].channelName);
         channel->setAttribute("Stream ID", streamID);
+        channel->setAttribute("Stream Name", streamName);
+        channel->setAttribute("Name", channelName);
         channelsXmlList->addChildElement(channel);
     }
 
