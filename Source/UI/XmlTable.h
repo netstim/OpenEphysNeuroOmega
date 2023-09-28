@@ -93,7 +93,7 @@ namespace AONode
         {
             String columnName = getAttributeNameForColumnId(columnId);
 
-            if (columnName == "Sampling Rate" || columnName == "Bit Resolution" || columnName == "Gain")
+            if (columnName == "Sampling_Rate" || columnName == "Bit_Resolution" || columnName == "Gain" || columnName == "Channel_Name")
             {
                 auto *textLabel = static_cast<EditableTextCustomComponent *>(existingComponentToUpdate);
 
@@ -151,7 +151,7 @@ namespace AONode
             {
                 dataList->getChildElement(rowNumber)->setAttribute("Enabled", true);
                 toggleButton->setToggleState(true, juce::dontSendNotification);
-                AlertWindow::showMessageBox(AlertWindow::NoIcon, "Neuro Omega", "At least one stream must be enabled", "OK", nullptr);
+                AlertWindow::showMessageBox(AlertWindow::NoIcon, "Neuro Omega", "At least one must be enabled", "OK", nullptr);
             }
         }
 
@@ -184,6 +184,12 @@ namespace AONode
         void resized() override
         {
             table.setBoundsInset(BorderSize<int>(8));
+        }
+
+        void updateContent()
+        {
+            if (dataList != nullptr)
+                table.updateContent();
         }
 
         ActionBroadcaster xmlModifiedBroadcaster;
@@ -237,6 +243,7 @@ namespace AONode
             SelectionColumnCustomComponent(TableComponent &td)
                 : owner(td)
             {
+                toggleButton.setColour(ToggleButton::tickDisabledColourId, juce::Colour(220, 220, 220));
                 addAndMakeVisible(toggleButton);
 
                 toggleButton.onClick = [this]
@@ -322,12 +329,16 @@ namespace AONode
     {
     public:
         //==============================================================================
-        XmlTableMainComponent(XmlElement *xmlList)
+        XmlTableMainComponent()
         {
-            table.init(xmlList);
+        }
 
+        void initFromXml(XmlElement *xmlList)
+        {
+            deleteAllChildren();
+            table = new TableComponent();
+            table->init(xmlList);
             addAndMakeVisible(table);
-
             setSize(1200, 600);
         }
 
@@ -338,18 +349,31 @@ namespace AONode
 
         void resized() override
         {
-            table.setBounds(getLocalBounds());
+            if (table != nullptr)
+                table->setBounds(getLocalBounds());
         }
 
         void addXmlModifiedListener(ActionListener *l)
         {
-            table.xmlModifiedBroadcaster.addActionListener(l);
+            if (table != nullptr)
+                table->xmlModifiedBroadcaster.addActionListener(l);
+        }
+
+        void updateContent()
+        {
+            if (table != nullptr)
+                table->updateContent();
+        }
+
+        void setEnabled(bool shouldBeEnabled)
+        {
+            if (table != nullptr)
+                table->setEnabled(shouldBeEnabled);
         }
 
     private:
         //==============================================================================
-        TableComponent table;
-
+        TableComponent *table;
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(XmlTableMainComponent)
     };
 }

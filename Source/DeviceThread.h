@@ -88,6 +88,9 @@ namespace AONode
 
 		XmlElement *channelsXmlList = nullptr;
 		XmlElement *streamsXmlList = nullptr;
+		void updateChannelsFromAOInfo();
+		void updateChannelsFromDefaults();
+		void updateChannelsStreamsEnabled();
 
 	private:
 		// Channels info
@@ -124,7 +127,8 @@ namespace AONode
 		String getLastAOSDKError();
 		void waitForConnection();
 
-		void setUpDefaultStream();
+		XmlElement *parseDefaultFileByName(String name);
+		XmlElement *getStreamMatchingName(XmlElement *list, String *name);
 
 		int updateStreamDataArrayFromAOAndGetNumberOfSamples(int streamID);
 		int updateStreamDataArrayFromTestDataAndGetNumberOfSamples(int streamID);
@@ -136,8 +140,7 @@ namespace AONode
 		void queryDistanceToTarget();
 
 		/** Testing */
-		bool testing = false;
-		int sleepTimeMiliS;
+		AO::SInformation *populateInfoWithTestData(AO::uint32 *AONumberOfChannels);
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeviceThread);
 	};
