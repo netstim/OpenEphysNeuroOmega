@@ -46,8 +46,7 @@ namespace AONode
 	{
 	public:
 		/** Constructor */
-		ChannelsStreamsCanvas(DeviceThread *board,
-							  DeviceEditor *editor);
+		ChannelsStreamsCanvas(DeviceEditor *editor);
 
 		/** Destructor */
 		~ChannelsStreamsCanvas() {}
@@ -61,8 +60,12 @@ namespace AONode
 		/** Called when the component's tab becomes visible again*/
 		void refreshState();
 
+		void setEnabled(bool shouldBeEnabled);
+
 		/** Called when parameters of the underlying data processor are changed*/
 		void update();
+
+		void updateContent();
 
 		/** Called instead of repaint to avoid redrawing underlying components*/
 		void refresh();
@@ -78,9 +81,6 @@ namespace AONode
 		std::unique_ptr<TabbedComponent> channelStreamTabs;
 		std::unique_ptr<XmlTableMainComponent> channelsTable;
 		std::unique_ptr<XmlTableMainComponent> streamsTable;
-
-		/** Pointer to the acquisition device */
-		DeviceThread *board;
 
 		/** Pointer to the editor object*/
 		DeviceEditor *editor;

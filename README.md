@@ -14,14 +14,15 @@ The Neuro Omega (proprietary) SDK should already be installed in the computer an
 
 #### _Manual_
 
-The compiled dll for GUI v6 is available from the Releases page. It should be downloaded and placed under `C:\ProgramData\Open Ephys\plugins-api8`.
+The compiled dll for GUI v6 is available from the Releases page. It should be downloaded and placed under `C:\ProgramData\Open Ephys\plugins-api8`. The `.xml` configuration files should be placed under `C:\ProgramData\Open Ephys\configs-api8`.
 
 #### _Github CLI_
 
-Using Github CLI is easy to stay up to date with latest release using the following command:
+Using Github CLI is easy to stay up to date with latest release using the following commands:
 
 ```PowerShell
 gh release download --clobber --dir "C:\ProgramData\Open Ephys\plugins-api8" --pattern *.dll --repo netstim/OpenEphysNeuroOmega
+gh release download --clobber --dir "C:\ProgramData\Open Ephys\configs-api8" --pattern *.xml --repo netstim/OpenEphysNeuroOmega
 ```
 
 #### _From Source_

@@ -30,7 +30,6 @@
 
 #include <ctime>
 #include <math.h>
-#include <stdlib.h>
 
 // AlphaOmega SDK
 namespace AO
@@ -45,6 +44,9 @@ using namespace AONode;
 #define AO_BUFFER_SIZE_MS 5000
 #define SOURCE_BUFFER_SIZE 10000
 
+#define TEST_MODE_ON false
+#define TEST_SLEEP_TIME_MS 100
+
 static const float DRIVE_ZERO_POSITION_MILIM = 25.0;
 
 DataThread *DeviceThread::createDataThread(SourceNode *sn)
@@ -56,52 +58,41 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
                                              isTransmitting(false),
                                              updateSettingsDuringAcquisition(false)
 {
-
-    queryUserStartConnection();
-
     // start with 2 channels and automatically resize
     // removing this will make the gui crash
     sourceBuffers.add(new DataBuffer(2, SOURCE_BUFFER_SIZE));
 
+    queryUserStartConnection();
+    if (foundInputSource())
+        updateChannelsFromAOInfo();
+}
+
+void DeviceThread::updateChannelsFromAOInfo()
+{
     AO::uint32 AONumberOfChannels = 0;
     AO::GetChannelsCount(&AONumberOfChannels);
-    if (testing)
-        AONumberOfChannels = 10;
+    AO::SInformation *pChannelsInfo;
 
-    AO::SInformation *pChannelsInfo = new AO::SInformation[AONumberOfChannels];
-    AO::GetAllChannels(pChannelsInfo, AONumberOfChannels);
-    if (testing)
+    if (TEST_MODE_ON)
+        pChannelsInfo = populateInfoWithTestData(&AONumberOfChannels);
+    else
     {
-        pChannelsInfo[0].channelID = 10000;
-        pChannelsInfo[1].channelID = 10001;
-        pChannelsInfo[2].channelID = 10002;
-        pChannelsInfo[3].channelID = 10003;
-        pChannelsInfo[4].channelID = 10004;
-        pChannelsInfo[5].channelID = 10005;
-        pChannelsInfo[6].channelID = 10006;
-        pChannelsInfo[7].channelID = 10007;
-        pChannelsInfo[8].channelID = 10008;
-        pChannelsInfo[9].channelID = 10009;
-        strcpy(pChannelsInfo[0].channelName, "LFP 01 / Central");
-        strcpy(pChannelsInfo[1].channelName, "LFP 02 / Posteriolateral");
-        strcpy(pChannelsInfo[2].channelName, "LFP 03");
-        strcpy(pChannelsInfo[3].channelName, "LFP 04");
-        strcpy(pChannelsInfo[4].channelName, "LFP 05");
-        strcpy(pChannelsInfo[5].channelName, "Macro LFP 01 / Central");
-        strcpy(pChannelsInfo[6].channelName, "Macro LFP 02 / Posteriolateral");
-        strcpy(pChannelsInfo[7].channelName, "Macro LFP 03");
-        strcpy(pChannelsInfo[8].channelName, "Macro LFP 04");
-        strcpy(pChannelsInfo[9].channelName, "Macro LFP 05");
+        pChannelsInfo = new AO::SInformation[AONumberOfChannels];
+        AO::GetAllChannels(pChannelsInfo, AONumberOfChannels);
     }
+
+    LOGC("Found ", AONumberOfChannels, " AO channels:");
+    for (int i = 0; i < AONumberOfChannels; i++)
+        LOGC("ID: ", pChannelsInfo[i].channelID, " Name: ", pChannelsInfo[i].channelName);
 
     channelsXmlList = new XmlElement("CHANNELS");
     streamsXmlList = new XmlElement("STREAMS");
 
-    XmlElement *channel, *stream;
+    XmlElement *channel, *stream, *defaultStream;
     String AOChannelName, channelName, streamName;
-    StringArray channelsIDs;
     int streamID = -1;
     numberOfChannels = AONumberOfChannels;
+    XmlElement *defaultStreamsXmlList = parseDefaultFileByName("STREAMS");
 
     for (int ch = 0; ch < AONumberOfChannels; ch++)
     {
@@ -113,51 +104,145 @@ DeviceThread::DeviceThread(SourceNode *sn) : DataThread(sn),
         }
         streamName = AOChannelName.upToFirstOccurrenceOf("/", false, false).dropLastCharacters(4).replace(" ", "");
         channelName = AOChannelName.fromFirstOccurrenceOf("/", false, false).replace(" ", "");
-        if (streamID < 0 || (!streamName.equalsIgnoreCase(streamsXmlList->getChildElement(streamID)->getStringAttribute("Name"))))
+        if (streamID < 0 || (!streamName.equalsIgnoreCase(streamsXmlList->getChildElement(streamID)->getStringAttribute("Stream_Name"))))
         {
-            channelsIDs.clear();
+            defaultStream = getStreamMatchingName(defaultStreamsXmlList, &streamName);
             streamID++;
             stream = new XmlElement("STREAM");
             stream->setAttribute("ID", streamID);
-            stream->setAttribute("Name", streamName);
-            stream->setAttribute("Sampling Rate", 1000);
-            stream->setAttribute("Bit Resolution", 1);
-            stream->setAttribute("Gain", 1);
-            stream->setAttribute("Channel IDs", "");
-            stream->setAttribute("Number Of Channels", "");
+            stream->setAttribute("Stream_Name", streamName);
+            stream->setAttribute("Sampling_Rate", (defaultStream != nullptr) ? defaultStream->getDoubleAttribute("Sampling_Rate") : 1000);
+            stream->setAttribute("Bit_Resolution", (defaultStream != nullptr) ? defaultStream->getDoubleAttribute("Bit_Resolution") : 1);
+            stream->setAttribute("Gain", (defaultStream != nullptr) ? defaultStream->getDoubleAttribute("Gain") : 1);
+            stream->setAttribute("Channel_IDs", "");
+            stream->setAttribute("Number_Of_Channels", "");
             stream->setAttribute("Enabled", false);
             streamsXmlList->addChildElement(stream);
         }
-        channelsIDs.add(String(pChannelsInfo[ch].channelID));
-        stream->setAttribute("Channel IDs", channelsIDs.joinIntoString(","));
-        stream->setAttribute("Number Of Channels", channelsIDs.size());
+        stream->setAttribute("Channel_IDs", "");
+        stream->setAttribute("Number_Of_Channels", "0");
         channel = new XmlElement("CHANNEL");
         channel->setAttribute("ID", pChannelsInfo[ch].channelID);
-        channel->setAttribute("Stream ID", streamID);
-        channel->setAttribute("Stream Name", streamName);
-        channel->setAttribute("Name", channelName);
+        channel->setAttribute("Stream_ID", streamID);
+        channel->setAttribute("Stream_Name", streamName);
+        channel->setAttribute("Channel_Name", channelName);
+        channel->setAttribute("Enabled", true);
         channelsXmlList->addChildElement(channel);
     }
 
     numberOfStreams = streamsXmlList->getNumChildElements();
-    setUpDefaultStream();
+    updateChannelsStreamsEnabled();
 }
 
-void DeviceThread::setUpDefaultStream()
+AO::SInformation *DeviceThread::populateInfoWithTestData(AO::uint32 *AONumberOfChannels)
 {
-    for (int streamID = 0; streamID < numberOfStreams; streamID++)
+    *AONumberOfChannels = 10;
+    AO::SInformation *pChannelsInfo = new AO::SInformation[*AONumberOfChannels];
+    pChannelsInfo[0].channelID = 10000;
+    pChannelsInfo[1].channelID = 10001;
+    pChannelsInfo[2].channelID = 10002;
+    pChannelsInfo[3].channelID = 10003;
+    pChannelsInfo[4].channelID = 10004;
+    pChannelsInfo[5].channelID = 10005;
+    pChannelsInfo[6].channelID = 10006;
+    pChannelsInfo[7].channelID = 10007;
+    pChannelsInfo[8].channelID = 10008;
+    pChannelsInfo[9].channelID = 10009;
+    strcpy(pChannelsInfo[0].channelName, "LFP 01 / Central");
+    strcpy(pChannelsInfo[1].channelName, "LFP 02 / Posteriolateral");
+    strcpy(pChannelsInfo[2].channelName, "LFP 03");
+    strcpy(pChannelsInfo[3].channelName, "LFP 04");
+    strcpy(pChannelsInfo[4].channelName, "LFP 05");
+    strcpy(pChannelsInfo[5].channelName, "Macro_LFP 01 / Central");
+    strcpy(pChannelsInfo[6].channelName, "Macro_LFP 02 / Posteriolateral");
+    strcpy(pChannelsInfo[7].channelName, "Macro_LFP 03");
+    strcpy(pChannelsInfo[8].channelName, "Macro_LFP 04");
+    strcpy(pChannelsInfo[9].channelName, "Macro_LFP 05");
+    return pChannelsInfo;
+}
+
+void DeviceThread::updateChannelsFromDefaults()
+{
+    channelsXmlList = parseDefaultFileByName("CHANNELS");
+    streamsXmlList = parseDefaultFileByName("STREAMS");
+
+    if ((channelsXmlList == nullptr) || (streamsXmlList == nullptr))
+        return;
+
+    numberOfChannels = channelsXmlList->getNumChildElements();
+    numberOfStreams = streamsXmlList->getNumChildElements();
+
+    updateChannelsStreamsEnabled();
+}
+
+XmlElement *DeviceThread::parseDefaultFileByName(String name)
+{
+    File configsDir;
+    if (File::getSpecialLocation(File::currentApplicationFile).getFullPathName().contains("plugin-GUI" + File::getSeparatorString() + "Build"))
+        configsDir = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getChildFile("configs");
+    else
+        configsDir = File::getSpecialLocation(File::SpecialLocationType::commonApplicationDataDirectory).getChildFile("Open Ephys").getChildFile("configs-api8");
+
+    File defaultsFile(configsDir.getChildFile("AO" + name + ".xml"));
+    if (!defaultsFile.existsAsFile())
     {
-        if (streamsXmlList->getChildElement(streamID)->getStringAttribute("Name").equalsIgnoreCase("RAW"))
-        {
-            streamsXmlList->getChildElement(streamID)->setAttribute("Sampling Rate", 44000);
-            streamsXmlList->getChildElement(streamID)->setAttribute("Bit Resolution", 38.147);
-            streamsXmlList->getChildElement(streamID)->setAttribute("Gain", 20);
-            streamsXmlList->getChildElement(streamID)->setAttribute("Enabled", true);
-            return;
-        }
+        LOGC("Config file not found: ", defaultsFile.getFullPathName());
+        return nullptr;
     }
-    if (numberOfStreams > 0)
-        streamsXmlList->getChildElement(0)->setAttribute("Enabled", true);
+    std::unique_ptr<juce::XmlElement> fileData = XmlDocument::parse(defaultsFile);
+    return new XmlElement(*fileData->getChildByName(name));
+}
+
+XmlElement *DeviceThread::getStreamMatchingName(XmlElement *list, String *name)
+{
+    for (auto *child : list->getChildIterator())
+        if (name->equalsIgnoreCase(child->getStringAttribute("Stream_Name")))
+            return new XmlElement(*child);
+    return nullptr;
+}
+
+void DeviceThread::updateChannelsStreamsEnabled()
+{
+    XmlElement *channel, *enabledChannel, *stream;
+    StringArray channelsIDs;
+    bool atLeastOneStreamEnabled = false;
+
+    for (int st = 0; st < numberOfStreams; st++)
+    {
+        stream = streamsXmlList->getChildElement(st);
+        stream->setAttribute("Channel_IDs", "");
+        stream->setAttribute("Number_Of_Channels", "0");
+    }
+
+    for (int ch = 0; ch < numberOfChannels; ch++)
+    {
+        channel = channelsXmlList->getChildElement(ch);
+        if (!channel->getBoolAttribute("Enabled"))
+            continue;
+
+        stream = streamsXmlList->getChildElement(channel->getIntAttribute("Stream_ID"));
+
+        channelsIDs.addTokens(stream->getStringAttribute("Channel_IDs"), ",", "\"");
+        channelsIDs.add(channel->getStringAttribute("ID"));
+
+        stream->setAttribute("Channel_IDs", channelsIDs.joinIntoString(","));
+        stream->setAttribute("Number_Of_Channels", channelsIDs.size());
+
+        channelsIDs.clear();
+        enabledChannel = channelsXmlList->getChildElement(ch);
+    }
+
+    for (int st = 0; st < numberOfStreams; st++)
+    {
+        stream = streamsXmlList->getChildElement(st);
+        if (!stream->getBoolAttribute("Enabled"))
+            continue;
+        stream->setAttribute("Enabled", (stream->getIntAttribute("Number_Of_Channels") > 0) ? true : false);
+        atLeastOneStreamEnabled = (atLeastOneStreamEnabled || stream->getBoolAttribute("Enabled"));
+    }
+
+    if (!atLeastOneStreamEnabled)
+        streamsXmlList->getChildElement(enabledChannel->getIntAttribute("Stream_ID"))->setAttribute("Enabled", true);
 }
 
 DeviceThread::~DeviceThread()
@@ -257,13 +342,16 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
     sourceBuffers.clear();
     sourceBuffersSampleCount.clear();
 
+    bool streamEnabled, channelEnabled;
     int streamID = -1, thisChannelStreamID = -1;
     DataStream *stream;
 
     for (int ch = 0; ch < numberOfChannels; ch++)
     {
-        thisChannelStreamID = channelsXmlList->getChildElement(ch)->getIntAttribute("Stream ID");
-        if (!streamsXmlList->getChildElement(thisChannelStreamID)->getBoolAttribute("Enabled"))
+        thisChannelStreamID = channelsXmlList->getChildElement(ch)->getIntAttribute("Stream_ID");
+        streamEnabled = streamsXmlList->getChildElement(thisChannelStreamID)->getBoolAttribute("Enabled");
+        channelEnabled = channelsXmlList->getChildElement(ch)->getBoolAttribute("Enabled");
+        if (!(streamEnabled && channelEnabled))
             continue;
         if (streamID != thisChannelStreamID)
         {
@@ -271,12 +359,11 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
             DataStream::Settings dataStreamSettings = getStreamSettingsFromID(streamID);
             stream = new DataStream(dataStreamSettings);
             sourceStreams->add(stream);
-            sourceBuffers.add(new DataBuffer(streamsXmlList->getChildElement(streamID)->getIntAttribute("Number Of Channels"), SOURCE_BUFFER_SIZE));
+            sourceBuffers.add(new DataBuffer(streamsXmlList->getChildElement(streamID)->getIntAttribute("Number_Of_Channels"), SOURCE_BUFFER_SIZE));
             sourceBuffersSampleCount.add(0);
         }
-        String channelName = channelsXmlList->getChildElement(ch)->getStringAttribute("Name");
-        float bitVolts = streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain");
-        std::cout << "Adding channel: " << channelName << std::endl; // not sure why removing this makes the gui crash
+        String channelName = channelsXmlList->getChildElement(ch)->getStringAttribute("Channel_Name");
+        float bitVolts = streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit_Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain");
         ContinuousChannel::Settings channelSettings{
             ContinuousChannel::ELECTRODE,
             channelName,
@@ -305,16 +392,16 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
 DataStream::Settings DeviceThread::getStreamSettingsFromID(int streamID)
 {
     DataStream::Settings dataStreamSettings{
-        streamsXmlList->getChildElement(streamID)->getStringAttribute("Name"),
+        streamsXmlList->getChildElement(streamID)->getStringAttribute("Stream_Name"),
         "description",
         "neuro-omega-device.data",
-        streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling Rate")};
+        streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling_Rate")};
     return dataStreamSettings;
 }
 
 bool DeviceThread::foundInputSource()
 {
-    return ((AO::isConnected() == AO::eAO_CONNECTED) || testing);
+    return ((AO::isConnected() == AO::eAO_CONNECTED) || TEST_MODE_ON);
 }
 
 bool DeviceThread::startAcquisition()
@@ -324,7 +411,13 @@ bool DeviceThread::startAcquisition()
     streamDataArray = new AO::int16[deviceDataArraySize];
 
     for (int i = 0; i < numberOfChannels; i++)
-        AO::AddBufferChannel(channelsXmlList->getChildElement(i)->getIntAttribute("ID"), AO_BUFFER_SIZE_MS);
+    {
+        if (channelsXmlList->getChildElement(i)->getBoolAttribute("Enabled"))
+        {
+            LOGC("AO::AddBufferChannel(", channelsXmlList->getChildElement(i)->getIntAttribute("ID"), ", ", AO_BUFFER_SIZE_MS, ")");
+            AO::AddBufferChannel(channelsXmlList->getChildElement(i)->getIntAttribute("ID"), AO_BUFFER_SIZE_MS);
+        }
+    }
     AO::ClearBuffers();
 
     startThread();
@@ -364,11 +457,10 @@ void DeviceThread::clearSourceBuffers()
 
 bool DeviceThread::updateBuffer()
 {
-    sleepTimeMiliS = 100;
-    if (testing)
+    if (TEST_MODE_ON)
     {
         deviceTimeStamp = std::time(0);
-        Thread::sleep(sleepTimeMiliS);
+        Thread::sleep(TEST_SLEEP_TIME_MS);
     }
 
     int numberOfSamplesPerChannel;
@@ -382,10 +474,10 @@ bool DeviceThread::updateBuffer()
         if (!streamsXmlList->getChildElement(streamID)->getBoolAttribute("Enabled"))
             continue;
 
-        numberOfChannelsInStream = streamsXmlList->getChildElement(streamID)->getIntAttribute("Number Of Channels");
-        bitVolts = streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain");
+        numberOfChannelsInStream = streamsXmlList->getChildElement(streamID)->getIntAttribute("Number_Of_Channels");
+        bitVolts = streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit_Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain");
 
-        if (testing)
+        if (TEST_MODE_ON)
             numberOfSamplesFromDevice = updateStreamDataArrayFromTestDataAndGetNumberOfSamples(streamID);
         else
             numberOfSamplesFromDevice = updateStreamDataArrayFromAOAndGetNumberOfSamples(streamID);
@@ -401,7 +493,7 @@ bool DeviceThread::updateBuffer()
         for (int samp = 0; samp < numberOfSamplesPerChannel; samp++)
         {
             sampleCount[samp] = sourceBuffersSampleCount[sourceBufferIdx] + samp;
-            timeStamps[samp] = float(deviceTimeStamp) + samp / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling Rate");
+            timeStamps[samp] = float(deviceTimeStamp) + samp / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling_Rate");
             eventCodes[samp] = 1;
             for (int chan = 0; chan < numberOfChannelsInStream; chan++)
             {
@@ -427,7 +519,7 @@ bool DeviceThread::updateBuffer()
 void DeviceThread::queryDistanceToTarget()
 {
     bool broadcast;
-    if (testing)
+    if (TEST_MODE_ON)
     {
         dtt = 100 * ((float)rand()) / (float)RAND_MAX;
         broadcast = (dtt < 0.1);
@@ -459,9 +551,9 @@ int DeviceThread::updateStreamDataArrayFromAOAndGetNumberOfSamples(int streamID)
 
 int *DeviceThread::getChannelIDsArrayFromStreamID(int streamID)
 {
-    int *arrChannel = new int[streamsXmlList->getChildElement(streamID)->getIntAttribute("Number Of Channels")];
+    int *arrChannel = new int[streamsXmlList->getChildElement(streamID)->getIntAttribute("Number_Of_Channels")];
     StringArray channelIDs;
-    channelIDs.addTokens(streamsXmlList->getChildElement(streamID)->getStringAttribute("Channel IDs"), ",", "\"");
+    channelIDs.addTokens(streamsXmlList->getChildElement(streamID)->getStringAttribute("Channel_IDs"), ",", "\"");
     for (int ch = 0; ch < channelIDs.size(); ch++)
         arrChannel[ch] = channelIDs[ch].getIntValue();
     return arrChannel;
@@ -469,7 +561,7 @@ int *DeviceThread::getChannelIDsArrayFromStreamID(int streamID)
 
 int DeviceThread::updateStreamDataArrayFromTestDataAndGetNumberOfSamples(int streamID)
 {
-    int numberOfSamplesPerChannel = sleepTimeMiliS / 1000.0 * streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling Rate");
+    int numberOfSamplesPerChannel = TEST_SLEEP_TIME_MS / 1000.0 * streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling_Rate");
     int numberOfSamplesFromDevice = numberOfSamplesPerChannel * numberOfChannelsInStream;
     for (int samp = 0; samp < numberOfSamplesPerChannel; samp++)
     {

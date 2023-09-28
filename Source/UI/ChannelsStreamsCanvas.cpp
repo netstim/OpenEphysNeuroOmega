@@ -24,22 +24,18 @@
 #include "ChannelsStreamsCanvas.h"
 #include "XmlTable.h"
 
-#include "../DeviceThread.h"
-
 using namespace AONode;
 
 /**********************************************/
 
-ChannelsStreamsCanvas::ChannelsStreamsCanvas(DeviceThread *board_,
-                                             DeviceEditor *editor_) : board(board_),
-                                                                      editor(editor_)
+ChannelsStreamsCanvas::ChannelsStreamsCanvas(DeviceEditor *editor_) : editor(editor_)
 {
 
     channelStreamViewport = std::make_unique<Viewport>();
     channelStreamTabs = std::make_unique<TabbedComponent>(TabbedButtonBar::TabsAtTop);
 
-    channelsTable = std::make_unique<XmlTableMainComponent>(board->channelsXmlList);
-    streamsTable = std::make_unique<XmlTableMainComponent>(board->streamsXmlList);
+    channelsTable = std::make_unique<XmlTableMainComponent>();
+    streamsTable = std::make_unique<XmlTableMainComponent>();
 
     channelStreamTabs->addTab("Channels", Colours::grey, channelsTable.get(), 0, 0);
     channelStreamTabs->addTab("Streams", Colours::grey, streamsTable.get(), 0, 1);
@@ -66,11 +62,26 @@ void ChannelsStreamsCanvas::refreshState()
     resized();
 }
 
-void ChannelsStreamsCanvas::update()
+void ChannelsStreamsCanvas::setEnabled(bool shouldBeEnabled)
 {
-    // TODO
+    if (channelsTable != nullptr)
+        channelsTable->setEnabled(shouldBeEnabled);
+    if (streamsTable != nullptr)
+        streamsTable->setEnabled(shouldBeEnabled);
+    updateContent();
 }
 
+void ChannelsStreamsCanvas::update()
+{
+}
+
+void ChannelsStreamsCanvas::updateContent()
+{
+    if (channelsTable != nullptr)
+        channelsTable->updateContent();
+    if (streamsTable != nullptr)
+        streamsTable->updateContent();
+}
 void ChannelsStreamsCanvas::beginAnimation()
 {
     // TODO

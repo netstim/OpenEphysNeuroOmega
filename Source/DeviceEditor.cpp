@@ -36,32 +36,60 @@ DeviceEditor::DeviceEditor(GenericProcessor *parentNode,
     : VisualizerEditor(parentNode, "tabText", 340), board(board_)
 {
     desiredWidth = 150;
-
     canvas = nullptr;
-
     tabText = "Neuro Omega";
 
-    // TODO: add UI
+    updateChannelsFromLabel = new Label("UpdateChannels", "Update Channels From:");
+    updateChannelsFromLabel->setBounds(10, 25, 130, 20);
+    addAndMakeVisible(updateChannelsFromLabel);
+
+    updateChannelsFromSelector = new ComboBox("");
+    updateChannelsFromSelector->setBounds(15, 50, 120, 20);
+    updateChannelsFromSelector->setVisible(true);
+    updateChannelsFromSelector->addItem(String("AO Info"), 1);
+    updateChannelsFromSelector->addItem(String("Defaults"), 2);
+    updateChannelsFromSelector->setSelectedItemIndex(0, dontSendNotification);
+    updateChannelsFromSelector->setEnabled(board->foundInputSource());
+    updateChannelsFromSelector->onChange = [this]
+    { updateChannelsFromChanged(); };
+    addChildComponent(updateChannelsFromSelector);
+}
+
+void DeviceEditor::updateChannelsFromChanged()
+{
+    switch (updateChannelsFromSelector->getSelectedId())
+    {
+    case 1:
+        board->updateChannelsFromAOInfo();
+        break;
+    case 2:
+        board->updateChannelsFromDefaults();
+        break;
+    }
+    setUpCanvas();
+    CoreServices::updateSignalChain(this);
 }
 
 void DeviceEditor::updateSettings()
 {
     if (canvas != nullptr)
-    {
         canvas->update();
-    }
 }
 
 void DeviceEditor::startAcquisition()
 {
+    if (updateChannelsFromSelector != nullptr)
+        updateChannelsFromSelector->setEnabled(false);
     if (canvas != nullptr)
-        canvas->streamsTable->setEnabled(false);
+        canvas->setEnabled(false);
 }
 
 void DeviceEditor::stopAcquisition()
 {
+    if (updateChannelsFromSelector != nullptr)
+        updateChannelsFromSelector->setEnabled(true);
     if (canvas != nullptr)
-        canvas->streamsTable->setEnabled(true);
+        canvas->setEnabled(true);
 }
 
 Visualizer *DeviceEditor::createNewCanvas()
@@ -70,13 +98,31 @@ Visualizer *DeviceEditor::createNewCanvas()
 
     if (processor->getTotalContinuousChannels() > 0)
     {
-        canvas = new ChannelsStreamsCanvas(board, this);
-        canvas->streamsTable->addXmlModifiedListener(this);
+        canvas = new ChannelsStreamsCanvas(this);
+        setUpCanvas();
     }
     return canvas;
 }
 
+void DeviceEditor::setUpCanvas()
+{
+    if (canvas != nullptr)
+    {
+        canvas->channelsTable->initFromXml(board->channelsXmlList);
+        canvas->channelsTable->addXmlModifiedListener(this);
+        canvas->streamsTable->initFromXml(board->streamsXmlList);
+        canvas->streamsTable->addXmlModifiedListener(this);
+        canvas->channelStreamTabs->setCurrentTabIndex(1);
+        canvas->channelStreamTabs->setCurrentTabIndex(0);
+        canvas->updateContent();
+        canvas->resized();
+    }
+}
+
 void DeviceEditor::actionListenerCallback(const String &message)
 {
+    board->updateChannelsStreamsEnabled();
+    if (canvas != nullptr)
+        canvas->updateContent();
     CoreServices::updateSignalChain(this);
 }

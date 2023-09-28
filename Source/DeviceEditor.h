@@ -58,6 +58,11 @@ namespace AONode
 		DeviceThread *board;
 		ChannelsStreamsCanvas *canvas;
 
+		ScopedPointer<Label> updateChannelsFromLabel;
+		ScopedPointer<ComboBox> updateChannelsFromSelector;
+		void updateChannelsFromChanged();
+		void setUpCanvas();
+
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeviceEditor);
 	};
 
