@@ -116,9 +116,10 @@ void DeviceThread::updateChannelsFromAOInfo()
             stream->setAttribute("Gain", (defaultStream != nullptr) ? defaultStream->getDoubleAttribute("Gain") : 1);
             stream->setAttribute("Channel_IDs", "");
             stream->setAttribute("Number_Of_Channels", "");
-            stream->setAttribute("Enabled", false);
+            stream->setAttribute("Enabled", (defaultStream != nullptr) ? defaultStream->getBoolAttribute("Enabled") : false);
             streamsXmlList->addChildElement(stream);
         }
+
         stream->setAttribute("Channel_IDs", "");
         stream->setAttribute("Number_Of_Channels", "0");
         channel = new XmlElement("CHANNEL");
