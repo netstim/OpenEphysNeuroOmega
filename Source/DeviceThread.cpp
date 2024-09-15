@@ -97,13 +97,18 @@ void DeviceThread::updateChannelsFromAOInfo()
     for (int ch = 0; ch < AONumberOfChannels; ch++)
     {
         AOChannelName = String(pChannelsInfo[ch].channelName);
-        if (!AOChannelName.containsChar('/'))
+        if (pChannelsInfo[ch].channelID > 11100)
         {
             numberOfChannels--;
             continue;
         }
-        streamName = AOChannelName.upToFirstOccurrenceOf("/", false, false).dropLastCharacters(4).replace(" ", "");
-        channelName = AOChannelName.fromFirstOccurrenceOf("/", false, false).replace(" ", "");
+
+        if (AOChannelName.contains(" /"))
+            streamName = AOChannelName.upToFirstOccurrenceOf(" /", false, false);
+        else
+            streamName = AOChannelName.upToLastOccurrenceOf(" ", false, false);
+        streamName = streamName.replace("- ", "");
+        channelName = AOChannelName.fromLastOccurrenceOf(" ", false, false);
         if (streamID < 0 || (!streamName.equalsIgnoreCase(streamsXmlList->getChildElement(streamID)->getStringAttribute("Stream_Name"))))
         {
             defaultStream = getStreamMatchingName(defaultStreamsXmlList, &streamName);
