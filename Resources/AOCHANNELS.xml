@@ -6,46 +6,46 @@
 <CHANNEL ID="10002" Stream_ID="0" Stream_Name="LFP" Channel_Name="03" Enabled="0"/>
 <CHANNEL ID="10003" Stream_ID="0" Stream_Name="LFP" Channel_Name="04" Enabled="0"/>
 <CHANNEL ID="10004" Stream_ID="0" Stream_Name="LFP" Channel_Name="05" Enabled="0"/>
-<CHANNEL ID="10005" Stream_ID="1" Stream_Name="Macro_LFP" Channel_Name="01" Enabled="0"/>
-<CHANNEL ID="10006" Stream_ID="1" Stream_Name="Macro_LFP" Channel_Name="02" Enabled="0"/>
-<CHANNEL ID="10007" Stream_ID="1" Stream_Name="Macro_LFP" Channel_Name="03" Enabled="0"/>
-<CHANNEL ID="10008" Stream_ID="1" Stream_Name="Macro_LFP" Channel_Name="04" Enabled="0"/>
-<CHANNEL ID="10009" Stream_ID="1" Stream_Name="Macro_LFP" Channel_Name="05" Enabled="0"/>
-<CHANNEL ID="10128" Stream_ID="2" Stream_Name="SEG" Channel_Name="01" Enabled="0"/>
-<CHANNEL ID="10129" Stream_ID="2" Stream_Name="SEG" Channel_Name="02" Enabled="0"/>
-<CHANNEL ID="10130" Stream_ID="2" Stream_Name="SEG" Channel_Name="03" Enabled="0"/>
-<CHANNEL ID="10131" Stream_ID="2" Stream_Name="SEG" Channel_Name="04" Enabled="0"/>
-<CHANNEL ID="10132" Stream_ID="2" Stream_Name="SEG" Channel_Name="05" Enabled="0"/>
-<CHANNEL ID="10256" Stream_ID="3" Stream_Name="SPK" Channel_Name="01" Enabled="0"/>
-<CHANNEL ID="10257" Stream_ID="3" Stream_Name="SPK" Channel_Name="02" Enabled="0"/>
-<CHANNEL ID="10258" Stream_ID="3" Stream_Name="SPK" Channel_Name="03" Enabled="0"/>
-<CHANNEL ID="10259" Stream_ID="3" Stream_Name="SPK" Channel_Name="04" Enabled="0"/>
-<CHANNEL ID="10260" Stream_ID="3" Stream_Name="SPK" Channel_Name="05" Enabled="0"/>
-<CHANNEL ID="10384" Stream_ID="4" Stream_Name="RAW" Channel_Name="01" Enabled="1"/>
-<CHANNEL ID="10385" Stream_ID="4" Stream_Name="RAW" Channel_Name="02" Enabled="0"/>
-<CHANNEL ID="10386" Stream_ID="4" Stream_Name="RAW" Channel_Name="03" Enabled="0"/>
-<CHANNEL ID="10387" Stream_ID="4" Stream_Name="RAW" Channel_Name="04" Enabled="0"/>
-<CHANNEL ID="10388" Stream_ID="4" Stream_Name="RAW" Channel_Name="05" Enabled="0"/>
-<CHANNEL ID="10389" Stream_ID="5" Stream_Name="Macro_RAW" Channel_Name="01" Enabled="0"/>
-<CHANNEL ID="10390" Stream_ID="5" Stream_Name="Macro_RAW" Channel_Name="02" Enabled="0"/>
-<CHANNEL ID="10391" Stream_ID="5" Stream_Name="Macro_RAW" Channel_Name="03" Enabled="0"/>
-<CHANNEL ID="10392" Stream_ID="5" Stream_Name="Macro_RAW" Channel_Name="04" Enabled="0"/>
-<CHANNEL ID="10393" Stream_ID="5" Stream_Name="Macro_RAW" Channel_Name="05" Enabled="0"/>
-<CHANNEL ID="11016" Stream_ID="6" Stream_Name="ANALOG_IN" Channel_Name="1" Enabled="0"/>
-<CHANNEL ID="11017" Stream_ID="6" Stream_Name="ANALOG_IN" Channel_Name="2" Enabled="0"/>
-<CHANNEL ID="11018" Stream_ID="6" Stream_Name="ANALOG_IN" Channel_Name="3" Enabled="0"/>
-<CHANNEL ID="11019" Stream_ID="6" Stream_Name="ANALOG_IN" Channel_Name="4" Enabled="0"/>
-<CHANNEL ID="11020" Stream_ID="6" Stream_Name="ANALOG_IN" Channel_Name="5" Enabled="0"/>
-<CHANNEL ID="11021" Stream_ID="6" Stream_Name="ANALOG_IN" Channel_Name="6" Enabled="0"/>
-<CHANNEL ID="11022" Stream_ID="6" Stream_Name="ANALOG_IN" Channel_Name="7" Enabled="0"/>
-<CHANNEL ID="11023" Stream_ID="6" Stream_Name="ANALOG_IN" Channel_Name="8" Enabled="0"/>
-<CHANNEL ID="11024" Stream_ID="7" Stream_Name="ADD_ANALOG_IN" Channel_Name="1" Enabled="0"/>
-<CHANNEL ID="11025" Stream_ID="7" Stream_Name="ADD_ANALOG_IN" Channel_Name="2" Enabled="0"/>
-<CHANNEL ID="11026" Stream_ID="7" Stream_Name="ADD_ANALOG_IN" Channel_Name="3" Enabled="0"/>
-<CHANNEL ID="11027" Stream_ID="7" Stream_Name="ADD_ANALOG_IN" Channel_Name="4" Enabled="0"/>
-<CHANNEL ID="11028" Stream_ID="7" Stream_Name="ADD_ANALOG_IN" Channel_Name="5" Enabled="0"/>
-<CHANNEL ID="11029" Stream_ID="7" Stream_Name="ADD_ANALOG_IN" Channel_Name="6" Enabled="0"/>
-<CHANNEL ID="11030" Stream_ID="7" Stream_Name="ADD_ANALOG_IN" Channel_Name="7" Enabled="0"/>
-<CHANNEL ID="11031" Stream_ID="7" Stream_Name="ADD_ANALOG_IN" Channel_Name="8" Enabled="0"/>
-</CHANNELS>
+<CHANNEL ID="10005" Stream_ID="1" Stream_Name="Macro LFP" Channel_Name="01" Enabled="0"/>
+<CHANNEL ID="10006" Stream_ID="1" Stream_Name="Macro LFP" Channel_Name="02" Enabled="0"/>
+<CHANNEL ID="10007" Stream_ID="1" Stream_Name="Macro LFP" Channel_Name="03" Enabled="0"/>
+<CHANNEL ID="10008" Stream_ID="1" Stream_Name="Macro LFP" Channel_Name="04" Enabled="0"/>
+<CHANNEL ID="10009" Stream_ID="1" Stream_Name="Macro LFP" Channel_Name="05" Enabled="0"/>
+<CHANNEL ID="10016" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="01" Enabled="0"/>
+<CHANNEL ID="10017" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="02" Enabled="0"/>
+<CHANNEL ID="10018" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="03" Enabled="0"/>
+<CHANNEL ID="10019" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="04" Enabled="0"/>
+<CHANNEL ID="10020" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="05" Enabled="0"/>
+<CHANNEL ID="10021" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="06" Enabled="0"/>
+<CHANNEL ID="10022" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="07" Enabled="0"/>
+<CHANNEL ID="10023" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="08" Enabled="0"/>
+<CHANNEL ID="10024" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="09" Enabled="0"/>
+<CHANNEL ID="10025" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="10" Enabled="0"/>
+<CHANNEL ID="10026" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="11" Enabled="0"/>
+<CHANNEL ID="10027" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="12" Enabled="0"/>
+<CHANNEL ID="10028" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="13" Enabled="0"/>
+<CHANNEL ID="10029" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="14" Enabled="0"/>
+<CHANNEL ID="10030" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="15" Enabled="0"/>
+<CHANNEL ID="10031" Stream_ID="2" Stream_Name="ECOG LF 1" Channel_Name="16" Enabled="0"/>
+<CHANNEL ID="10128" Stream_ID="3" Stream_Name="SEG" Channel_Name="01" Enabled="0"/>
+<CHANNEL ID="10129" Stream_ID="3" Stream_Name="SEG" Channel_Name="02" Enabled="0"/>
+<CHANNEL ID="10130" Stream_ID="3" Stream_Name="SEG" Channel_Name="03" Enabled="0"/>
+<CHANNEL ID="10131" Stream_ID="3" Stream_Name="SEG" Channel_Name="04" Enabled="0"/>
+<CHANNEL ID="10132" Stream_ID="3" Stream_Name="SEG" Channel_Name="05" Enabled="0"/>
+<CHANNEL ID="10256" Stream_ID="4" Stream_Name="SPK" Channel_Name="01" Enabled="0"/>
+<CHANNEL ID="10257" Stream_ID="4" Stream_Name="SPK" Channel_Name="02" Enabled="0"/>
+<CHANNEL ID="10258" Stream_ID="4" Stream_Name="SPK" Channel_Name="03" Enabled="0"/>
+<CHANNEL ID="10259" Stream_ID="4" Stream_Name="SPK" Channel_Name="04" Enabled="0"/>
+<CHANNEL ID="10260" Stream_ID="4" Stream_Name="SPK" Channel_Name="05" Enabled="0"/>
+<CHANNEL ID="10384" Stream_ID="5" Stream_Name="RAW" Channel_Name="01" Enabled="0"/>
+<CHANNEL ID="10385" Stream_ID="5" Stream_Name="RAW" Channel_Name="02" Enabled="0"/>
+<CHANNEL ID="10386" Stream_ID="5" Stream_Name="RAW" Channel_Name="03" Enabled="0"/>
+<CHANNEL ID="10387" Stream_ID="5" Stream_Name="RAW" Channel_Name="04" Enabled="0"/>
+<CHANNEL ID="10388" Stream_ID="5" Stream_Name="RAW" Channel_Name="05" Enabled="0"/>
+<CHANNEL ID="10389" Stream_ID="6" Stream_Name="Macro RAW" Channel_Name="01" Enabled="0"/>
+<CHANNEL ID="10390" Stream_ID="6" Stream_Name="Macro RAW" Channel_Name="02" Enabled="0"/>
+<CHANNEL ID="10391" Stream_ID="6" Stream_Name="Macro RAW" Channel_Name="03" Enabled="0"/>
+<CHANNEL ID="10392" Stream_ID="6" Stream_Name="Macro RAW" Channel_Name="04" Enabled="0"/>
+<CHANNEL ID="10393" Stream_ID="6" Stream_Name="Macro RAW" Channel_Name="05" Enabled="0"/>
+</CHANNELS
 </TABLE_DATA>
