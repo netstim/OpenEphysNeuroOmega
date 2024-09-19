@@ -88,11 +88,12 @@ void DeviceThread::updateChannelsFromAOInfo()
     channelsXmlList = new XmlElement("CHANNELS");
     streamsXmlList = new XmlElement("STREAMS");
 
-    XmlElement *channel, *stream, *defaultStream;
+    XmlElement *channel, *stream, *defaultStream, *defaultChannel;
     String AOChannelName, channelName, streamName;
     int streamID = -1;
     numberOfChannels = AONumberOfChannels;
     XmlElement *defaultStreamsXmlList = parseDefaultFileByName("STREAMS");
+    XmlElement* defaultChannelsXmlList = parseDefaultFileByName("CHANNELS");
 
     for (int ch = 0; ch < AONumberOfChannels; ch++)
     {
@@ -132,7 +133,8 @@ void DeviceThread::updateChannelsFromAOInfo()
         channel->setAttribute("Stream_ID", streamID);
         channel->setAttribute("Stream_Name", streamName);
         channel->setAttribute("Channel_Name", channelName);
-        channel->setAttribute("Enabled", true);
+        defaultChannel = getChannelMatchingID(defaultChannelsXmlList, pChannelsInfo[ch].channelID);
+        channel->setAttribute("Enabled", (defaultChannel != nullptr)? defaultChannel->getBoolAttribute("Enabled") : false);
         channelsXmlList->addChildElement(channel);
     }
 
@@ -203,6 +205,14 @@ XmlElement *DeviceThread::getStreamMatchingName(XmlElement *list, String *name)
 {
     for (auto *child : list->getChildIterator())
         if (name->equalsIgnoreCase(child->getStringAttribute("Stream_Name")))
+            return new XmlElement(*child);
+    return nullptr;
+}
+
+XmlElement* DeviceThread::getChannelMatchingID(XmlElement* list, int id)
+{
+    for (auto* child : list->getChildIterator())
+        if (id == child->getIntAttribute("ID"))
             return new XmlElement(*child);
     return nullptr;
 }

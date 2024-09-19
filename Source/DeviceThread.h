@@ -129,6 +129,7 @@ namespace AONode
 
 		XmlElement *parseDefaultFileByName(String name);
 		XmlElement *getStreamMatchingName(XmlElement *list, String *name);
+		XmlElement* getChannelMatchingID(XmlElement* list, int id);
 
 		int updateStreamDataArrayFromAOAndGetNumberOfSamples(int streamID);
 		int updateStreamDataArrayFromTestDataAndGetNumberOfSamples(int streamID);
