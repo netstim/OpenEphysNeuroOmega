@@ -104,12 +104,16 @@ void DeviceThread::updateChannelsFromAOInfo()
             continue;
         }
 
-        if (AOChannelName.contains(" /"))
-            streamName = AOChannelName.upToFirstOccurrenceOf(" /", false, false);
+        if (AOChannelName.endsWith("Central") || AOChannelName.endsWith("Anterior") || AOChannelName.endsWith("Medial") || AOChannelName.endsWith("Posterior") || AOChannelName.endsWith("Lateral"))
+            AOChannelName = AOChannelName.upToLastOccurrenceOf(" / ", false, false);
+
+        if (AOChannelName.contains(" / "))
+            streamName = AOChannelName.upToFirstOccurrenceOf(" / ", false, false);
         else
             streamName = AOChannelName.upToLastOccurrenceOf(" ", false, false);
         streamName = streamName.replace("- ", "");
         channelName = AOChannelName.fromLastOccurrenceOf(" ", false, false);
+
         if (streamID < 0 || (!streamName.equalsIgnoreCase(streamsXmlList->getChildElement(streamID)->getStringAttribute("Stream_Name"))))
         {
             defaultStream = getStreamMatchingName(defaultStreamsXmlList, &streamName);
