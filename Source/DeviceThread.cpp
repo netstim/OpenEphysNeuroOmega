@@ -105,7 +105,7 @@ void DeviceThread::updateChannelsFromAOInfo()
         }
 
         if (AOChannelName.endsWith("Central") || AOChannelName.endsWith("Anterior") || AOChannelName.endsWith("Medial") || AOChannelName.endsWith("Posterior") || AOChannelName.endsWith("Lateral"))
-            AOChannelName = AOChannelName.upToLastOccurrenceOf(" / ", false, false);
+            AOChannelName = AOChannelName.replace(" / ", "-");
 
         if (AOChannelName.contains(" / "))
             streamName = AOChannelName.upToFirstOccurrenceOf(" / ", false, false);
@@ -208,7 +208,7 @@ XmlElement *DeviceThread::parseDefaultFileByName(String name)
 XmlElement *DeviceThread::getStreamMatchingName(XmlElement *list, String *name)
 {
     for (auto *child : list->getChildIterator())
-        if (name->equalsIgnoreCase(child->getStringAttribute("Stream_Name")))
+        if (name->startsWithIgnoreCase(child->getStringAttribute("Stream_Name")))
             return new XmlElement(*child);
     return nullptr;
 }

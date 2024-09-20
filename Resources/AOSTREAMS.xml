@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TABLE_DATA>
 <STREAMS>
-<STREAM Stream_Name="LFP" Sampling_Rate="1375" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="1"/>
-<STREAM Stream_Name="Macro LFP" Sampling_Rate="1375" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="1"/>
-<STREAM Stream_Name="ECOG LF 1" Sampling_Rate="1375" Bit_Resolution="38.146973" Gain="55.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
-<STREAM Stream_Name="SEG" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
-<STREAM Stream_Name="SPK" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
-<STREAM Stream_Name="RAW" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
-<STREAM Stream_Name="Macro RAW" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="LFP" Sampling_Rate="1375" Bit_Resolution="1.9" Gain="20" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="Macro LFP" Sampling_Rate="1375" Bit_Resolution="1.9" Gain="20" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="ECOG LF" Sampling_Rate="1375" Bit_Resolution="0.7" Gain="55" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="ECOG HF" Sampling_Rate="22000" Bit_Resolution="0.7" Gain="55" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="EEG" Sampling_Rate="1375" Bit_Resolution="0.7" Gain="55" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="EMG" Sampling_Rate="44000" Bit_Resolution="0.7" Gain="55" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="SEG" Sampling_Rate="44000" Bit_Resolution="1.9" Gain="20" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="SPK" Sampling_Rate="44000" Bit_Resolution="1.9" Gain="20" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="RAW" Sampling_Rate="44000" Bit_Resolution="1.9" Gain="20" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="Macro RAW" Sampling_Rate="44000" Bit_Resolution="1.9" Gain="20" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
 </STREAMS>
 </TABLE_DATA>
