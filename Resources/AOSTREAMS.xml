@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TABLE_DATA>
 <STREAMS>
-<STREAM ID="0" Stream_Name="LFP" Sampling_Rate="1375" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="1"/>
-<STREAM ID="1" Stream_Name="Macro LFP" Sampling_Rate="1375" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="1"/>
-<STREAM ID="2" Stream_Name="ECOG LF 1" Sampling_Rate="1375" Bit_Resolution="38.146973" Gain="55.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
-<STREAM ID="3" Stream_Name="SEG" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
-<STREAM ID="4" Stream_Name="SPK" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
-<STREAM ID="5" Stream_Name="RAW" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
-<STREAM ID="6" Stream_Name="Macro RAW" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="LFP" Sampling_Rate="1375" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="1"/>
+<STREAM Stream_Name="Macro LFP" Sampling_Rate="1375" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="1"/>
+<STREAM Stream_Name="ECOG LF 1" Sampling_Rate="1375" Bit_Resolution="38.146973" Gain="55.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="SEG" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="SPK" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="RAW" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="Macro RAW" Sampling_Rate="44000" Bit_Resolution="38.146973" Gain="20.000000" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
 </STREAMS>
 </TABLE_DATA>
