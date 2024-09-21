@@ -137,7 +137,8 @@ void DeviceThread::updateChannelsFromAOInfo()
         channel->setAttribute("Stream_ID", streamID);
         channel->setAttribute("Stream_Name", streamName);
         channel->setAttribute("Channel_Name", channelName);
-        defaultChannel = getChannelMatchingID(defaultChannelsXmlList, pChannelsInfo[ch].channelID);
+        //channel->setAttribute("Enabled", true);
+        defaultChannel = getChannelMatchingName(defaultChannelsXmlList, &streamName, &channelName);
         channel->setAttribute("Enabled", (defaultChannel != nullptr)? defaultChannel->getBoolAttribute("Enabled") : false);
         channelsXmlList->addChildElement(channel);
     }
@@ -213,10 +214,10 @@ XmlElement *DeviceThread::getStreamMatchingName(XmlElement *list, String *name)
     return nullptr;
 }
 
-XmlElement* DeviceThread::getChannelMatchingID(XmlElement* list, int id)
+XmlElement* DeviceThread::getChannelMatchingName(XmlElement *list, String *Stream_Name, String *Channel_Name)
 {
     for (auto* child : list->getChildIterator())
-        if (id == child->getIntAttribute("ID"))
+        if (Stream_Name->equalsIgnoreCase(child->getStringAttribute("Stream_Name")) && Channel_Name->equalsIgnoreCase(child->getStringAttribute("Channel_Name")))
             return new XmlElement(*child);
     return nullptr;
 }
