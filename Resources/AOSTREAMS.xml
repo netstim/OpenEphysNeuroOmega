@@ -12,5 +12,7 @@
 <STREAM Stream_Name="SPK" Sampling_Rate="44000" Bit_Resolution="1.9" Gain="20" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
 <STREAM Stream_Name="RAW" Sampling_Rate="44000" Bit_Resolution="1.9" Gain="20" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
 <STREAM Stream_Name="Macro RAW" Sampling_Rate="44000" Bit_Resolution="1.9" Gain="20" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="ANALOG-IN" Sampling_Rate="2750" Bit_Resolution="2500" Gain="0.25" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
+<STREAM Stream_Name="ADD ANALOG-IN" Sampling_Rate="2750" Bit_Resolution="2500" Gain="0.25" Channel_IDs="" Number_Of_Channels="0" Enabled="0"/>
 </STREAMS>
 </TABLE_DATA>
