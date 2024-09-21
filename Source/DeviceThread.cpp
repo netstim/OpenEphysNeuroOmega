@@ -85,6 +85,21 @@ void DeviceThread::updateChannelsFromAOInfo()
     for (int i = 0; i < AONumberOfChannels; i++)
         LOGC("ID: ", pChannelsInfo[i].channelID, " Name: ", pChannelsInfo[i].channelName);
 
+    File configsDir;
+    if (File::getSpecialLocation(File::currentApplicationFile).getFullPathName().contains("plugin-GUI" + File::getSeparatorString() + "Build"))
+        configsDir = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getChildFile("configs");
+    else
+        configsDir = File::getSpecialLocation(File::SpecialLocationType::commonApplicationDataDirectory).getChildFile("Open Ephys").getChildFile("configs-api8");
+
+    FileOutputStream logChannels(configsDir.getChildFile("ChannelsAvailable.log"));
+    logChannels.setPosition(0);
+    logChannels.truncate();
+    for (int i = 0; i < AONumberOfChannels; i++)
+    {
+        logChannels.writeText(String(pChannelsInfo[i].channelID) + ": " + pChannelsInfo[i].channelName + "\n", false, false, nullptr);
+        logChannels.flush();
+    }
+
     channelsXmlList = new XmlElement("CHANNELS");
     streamsXmlList = new XmlElement("STREAMS");
 
@@ -145,6 +160,7 @@ void DeviceThread::updateChannelsFromAOInfo()
 
     numberOfStreams = streamsXmlList->getNumChildElements();
     updateChannelsStreamsEnabled();
+    streamsXmlList->writeTo(configsDir.getChildFile("ChannelsFiltered.xml"));
 }
 
 AO::SInformation *DeviceThread::populateInfoWithTestData(AO::uint32 *AONumberOfChannels)
