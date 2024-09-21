@@ -400,7 +400,7 @@ void DeviceThread::updateSettings(OwnedArray<ContinuousChannel> *continuousChann
             sourceBuffersSampleCount.add(0);
         }
         String channelName = channelsXmlList->getChildElement(ch)->getStringAttribute("Channel_Name");
-        float bitVolts = streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit_Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain");
+        float bitVolts = streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit_Resolution");
         ContinuousChannel::Settings channelSettings{
             ContinuousChannel::ELECTRODE,
             channelName,
@@ -512,7 +512,7 @@ bool DeviceThread::updateBuffer()
             continue;
 
         numberOfChannelsInStream = streamsXmlList->getChildElement(streamID)->getIntAttribute("Number_Of_Channels");
-        bitVolts = streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit_Resolution") / streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Gain");
+        bitVolts = streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Bit_Resolution");
 
         if (TEST_MODE_ON)
             numberOfSamplesFromDevice = updateStreamDataArrayFromTestDataAndGetNumberOfSamples(streamID);
