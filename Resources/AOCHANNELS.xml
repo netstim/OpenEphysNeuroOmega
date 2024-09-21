@@ -13,6 +13,11 @@
 <CHANNEL Stream_Name="LFP" Channel_Name="05-Lateral" Enabled="1"/>
 <CHANNEL Stream_Name="LFP" Channel_Name="09" Enabled="1"/>
 <CHANNEL Stream_Name="LFP" Channel_Name="10" Enabled="1"/>
+<CHANNEL Stream_Name="LFP 1" Channel_Name="01" Enabled="1"/>
+<CHANNEL Stream_Name="LFP 1" Channel_Name="02" Enabled="1"/>
+<CHANNEL Stream_Name="LFP 1" Channel_Name="03" Enabled="1"/>
+<CHANNEL Stream_Name="LFP 1" Channel_Name="04" Enabled="1"/>
+<CHANNEL Stream_Name="LFP 1" Channel_Name="05" Enabled="1"/>
 <CHANNEL Stream_Name="Macro LFP" Channel_Name="01" Enabled="1"/>
 <CHANNEL Stream_Name="Macro LFP" Channel_Name="02" Enabled="1"/>
 <CHANNEL Stream_Name="Macro LFP" Channel_Name="03" Enabled="1"/>
@@ -23,11 +28,6 @@
 <CHANNEL Stream_Name="Macro LFP" Channel_Name="03-Medial" Enabled="1"/>
 <CHANNEL Stream_Name="Macro LFP" Channel_Name="04-Posterior" Enabled="1"/>
 <CHANNEL Stream_Name="Macro LFP" Channel_Name="05-Lateral" Enabled="1"/>
-<CHANNEL Stream_Name="LFP 1" Channel_Name="01" Enabled="1"/>
-<CHANNEL Stream_Name="LFP 1" Channel_Name="02" Enabled="1"/>
-<CHANNEL Stream_Name="LFP 1" Channel_Name="03" Enabled="1"/>
-<CHANNEL Stream_Name="LFP 1" Channel_Name="04" Enabled="1"/>
-<CHANNEL Stream_Name="LFP 1" Channel_Name="05" Enabled="1"/>
 <CHANNEL Stream_Name="Macro LFP 1" Channel_Name="06" Enabled="1"/>
 <CHANNEL Stream_Name="Macro LFP 1" Channel_Name="07" Enabled="1"/>
 <CHANNEL Stream_Name="Macro LFP 1" Channel_Name="08" Enabled="1"/>
@@ -129,6 +129,54 @@
 <CHANNEL Stream_Name="ECOG HF 2" Channel_Name="14" Enabled="1"/>
 <CHANNEL Stream_Name="ECOG HF 2" Channel_Name="15" Enabled="1"/>
 <CHANNEL Stream_Name="ECOG HF 2" Channel_Name="16" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="01" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="02" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="03" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="04" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="05" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="06" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="07" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="08" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="09" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="10" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="11" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="12" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="13" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="14" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="15" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 3" Channel_Name="16" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="01" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="02" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="03" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="04" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="05" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="06" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="07" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="08" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="09" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="10" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="11" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="12" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="13" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="14" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="15" Enabled="1"/>
+<CHANNEL Stream_Name="ECOG HF 4" Channel_Name="16" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="01" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="02" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="03" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="04" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="05" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="06" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="07" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="08" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="09" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="10" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="11" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="12" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="13" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="14" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="15" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 1" Channel_Name="16" Enabled="1"/>
 <CHANNEL Stream_Name="EEG 2" Channel_Name="01" Enabled="1"/>
 <CHANNEL Stream_Name="EEG 2" Channel_Name="02" Enabled="1"/>
 <CHANNEL Stream_Name="EEG 2" Channel_Name="03" Enabled="1"/>
@@ -161,6 +209,38 @@
 <CHANNEL Stream_Name="EEG 3" Channel_Name="14" Enabled="1"/>
 <CHANNEL Stream_Name="EEG 3" Channel_Name="15" Enabled="1"/>
 <CHANNEL Stream_Name="EEG 3" Channel_Name="16" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="01" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="02" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="03" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="04" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="05" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="06" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="07" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="08" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="09" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="10" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="11" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="12" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="13" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="14" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="15" Enabled="1"/>
+<CHANNEL Stream_Name="EEG 4" Channel_Name="16" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="01" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="02" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="03" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="04" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="05" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="06" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="07" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="08" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="09" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="10" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="11" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="12" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="13" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="14" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="15" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 1" Channel_Name="16" Enabled="1"/>
 <CHANNEL Stream_Name="EMG 2" Channel_Name="01" Enabled="1"/>
 <CHANNEL Stream_Name="EMG 2" Channel_Name="02" Enabled="1"/>
 <CHANNEL Stream_Name="EMG 2" Channel_Name="03" Enabled="1"/>
@@ -177,6 +257,22 @@
 <CHANNEL Stream_Name="EMG 2" Channel_Name="14" Enabled="1"/>
 <CHANNEL Stream_Name="EMG 2" Channel_Name="15" Enabled="1"/>
 <CHANNEL Stream_Name="EMG 2" Channel_Name="16" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="01" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="02" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="03" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="04" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="05" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="06" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="07" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="08" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="09" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="10" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="11" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="12" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="13" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="14" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="15" Enabled="1"/>
+<CHANNEL Stream_Name="EMG 3" Channel_Name="16" Enabled="1"/>
 <CHANNEL Stream_Name="EMG 4" Channel_Name="01" Enabled="1"/>
 <CHANNEL Stream_Name="EMG 4" Channel_Name="02" Enabled="1"/>
 <CHANNEL Stream_Name="EMG 4" Channel_Name="03" Enabled="1"/>
@@ -249,6 +345,11 @@
 <CHANNEL Stream_Name="RAW" Channel_Name="03-Medial" Enabled="1"/>
 <CHANNEL Stream_Name="RAW" Channel_Name="04-Posterior" Enabled="1"/>
 <CHANNEL Stream_Name="RAW" Channel_Name="05-Lateral" Enabled="1"/>
+<CHANNEL Stream_Name="RAW 1" Channel_Name="01" Enabled="1"/>
+<CHANNEL Stream_Name="RAW 1" Channel_Name="02" Enabled="1"/>
+<CHANNEL Stream_Name="RAW 1" Channel_Name="03" Enabled="1"/>
+<CHANNEL Stream_Name="RAW 1" Channel_Name="04" Enabled="1"/>
+<CHANNEL Stream_Name="RAW 1" Channel_Name="05" Enabled="1"/>
 <CHANNEL Stream_Name="Macro RAW" Channel_Name="01" Enabled="1"/>
 <CHANNEL Stream_Name="Macro RAW" Channel_Name="02" Enabled="1"/>
 <CHANNEL Stream_Name="Macro RAW" Channel_Name="03" Enabled="1"/>
@@ -259,11 +360,6 @@
 <CHANNEL Stream_Name="Macro RAW" Channel_Name="03-Medial" Enabled="1"/>
 <CHANNEL Stream_Name="Macro RAW" Channel_Name="04-Posterior" Enabled="1"/>
 <CHANNEL Stream_Name="Macro RAW" Channel_Name="05-Lateral" Enabled="1"/>
-<CHANNEL Stream_Name="RAW 1" Channel_Name="01" Enabled="1"/>
-<CHANNEL Stream_Name="RAW 1" Channel_Name="02" Enabled="1"/>
-<CHANNEL Stream_Name="RAW 1" Channel_Name="03" Enabled="1"/>
-<CHANNEL Stream_Name="RAW 1" Channel_Name="04" Enabled="1"/>
-<CHANNEL Stream_Name="RAW 1" Channel_Name="05" Enabled="1"/>
 <CHANNEL Stream_Name="Macro RAW 1" Channel_Name="06" Enabled="1"/>
 <CHANNEL Stream_Name="Macro RAW 1" Channel_Name="07" Enabled="1"/>
 <CHANNEL Stream_Name="Macro RAW 1" Channel_Name="08" Enabled="1"/>
