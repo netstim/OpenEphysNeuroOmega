@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.15)
 if (NOT DEFINED GUI_BASE_DIR)
 	if (DEFINED ENV{GUI_BASE_DIR})
 		set(GUI_BASE_DIR $ENV{GUI_BASE_DIR})
@@ -59,6 +59,7 @@ endif()
 
 #Libraries and compiler options
 if(MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
 	target_link_libraries(${PLUGIN_NAME} ${GUI_BIN_DIR}/open-ephys.lib)
 	target_compile_options(${PLUGIN_NAME} PRIVATE /sdl-)
 	
@@ -92,13 +93,7 @@ foreach( src_file IN ITEMS ${SRC_FILES})
 endforeach()
 
 #AlphaOmega SDK
-SET(ALPHAOMEGA_SDK_PATH_HINTS
-  "C:/Program Files (x86)/AlphaOmega/Neuro Omega System SDK"
-  )
-find_path(ALPHAOMEGA_SDK_DIR ReadMe.txt
-  PATHS ${ALPHAOMEGA_SDK_PATH_HINTS}
-  DOC "AlphaOmega SDK directory"
-  )
+SET(ALPHAOMEGA_SDK_DIR "C:/Program Files (x86)/AlphaOmega/Neuro Omega System SDK")
 
 target_link_libraries(${PLUGIN_NAME} ${ALPHAOMEGA_SDK_DIR}/CPP_SDK/win64/NeuroOmega_x64.lib)
 target_include_directories(${PLUGIN_NAME} PRIVATE ${ALPHAOMEGA_SDK_DIR}/CPP_SDK/Include)
