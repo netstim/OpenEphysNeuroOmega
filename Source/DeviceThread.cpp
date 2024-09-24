@@ -432,7 +432,7 @@ DataStream::Settings DeviceThread::getStreamSettingsFromID(int streamID)
         streamsXmlList->getChildElement(streamID)->getStringAttribute("Stream_Name"),
         "description",
         "neuro-omega-device.data",
-        streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling_Rate")};
+        float(streamsXmlList->getChildElement(streamID)->getDoubleAttribute("Sampling_Rate"))};
     return dataStreamSettings;
 }
 
