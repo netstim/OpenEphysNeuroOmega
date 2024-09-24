@@ -119,14 +119,22 @@ void DeviceThread::updateChannelsFromAOInfo()
             continue;
         }
 
+        // Account for "LFP 01 / Central"
         if (AOChannelName.endsWith("Central") || AOChannelName.endsWith("Anterior") || AOChannelName.endsWith("Medial") || AOChannelName.endsWith("Posterior") || AOChannelName.endsWith("Lateral"))
             AOChannelName = AOChannelName.replace(" / ", "-");
 
+        
         if (AOChannelName.contains(" / "))
+            // Account for pattern like "ECOG LF 2 / 01"
             streamName = AOChannelName.upToFirstOccurrenceOf(" / ", false, false);
         else
+            // Account for pattern like "Macro LFP 01"
             streamName = AOChannelName.upToLastOccurrenceOf(" ", false, false);
+
+        // Account for pattern like "Port- 1"
         streamName = streamName.replace("- ", "");
+
+        // Channel name always starts from the last occurrence of space
         channelName = AOChannelName.fromLastOccurrenceOf(" ", false, false);
 
         if (streamID < 0 || (!streamName.equalsIgnoreCase(streamsXmlList->getChildElement(streamID)->getStringAttribute("Stream_Name"))))
